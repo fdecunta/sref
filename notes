@@ -1,0 +1,48 @@
+The idea is to input a list of papers and get their refernces right using a specific format.
+
+The program needs information about each of those studies. Zotero and others use files like BibTex. Then format them using Citation Style Language (CSL)
+
+The problem with Zotero, Mendeley, etc. is that they add some weird things to the document and make it slow.
+
+The idea is to have something simpler, from the CLI, and in plain text. Then format manually, is not that hard.
+
+How to get all the data for the papers?
+Can use CrossRef and get information based ona list of titles or DOIs. Then the problem is how to use that data to get the references right.
+---
+
+## Use only Citation Style Language
+
+Other option is to use Citation Style Language to just import the citations style for each journal.
+You can search the journal in:
+
+https://www.zotero.org/styles
+
+https://github.com/zepinglee/citeproc-lua 
+https://github.com/citeproc-py/citeproc-py
+
+This may work, but need to test it. For example, try to format in the Journal of Ecology style.
+
+---
+
+## Create a small language
+
+Another way is to use a simple language to define the format of the cites.
+
+%A    authors. The last one separated with '&'.
+%A10  only first ten authors
+%Y    year
+%T    title
+%J    journal name
+%j    abbreviated journal name
+%V    volumen
+%I    issue
+%P    pages
+%D    DOI
+%U    URL
+
+For example:
+%A.(%Y).%T.%V(%I)%P.%D 
+
+This has a problem with books. They have another format.
+
+--- 
