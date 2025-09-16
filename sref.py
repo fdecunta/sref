@@ -16,14 +16,34 @@ class Reference():
         self.url = message['URL']
 
 
-con = sqlite3.connect(":memory:")
-cur = con.cursor()
-
 # TODO: Format authors names
 # TODO: Check if paper or book
 
 
+def init_db(content):
+    schema = """
+    CREATE TABLE IF NOT EXISTS refs (
+        input_ref TEXT NOT NULL UNIQUE,
+        crossref_output TEXT,
+        fmt_ref TEXT
+    )
+    """
+
+    con = sqlite3.connect(":memory:")
+    cur = con.cursor()
+    cur.execute(schema)
+
+    cur.executemany(
+        "INSERT INTO refs(input_ref) VALUES(?)",
+        [(r,) for r in content]
+    )
+    con.commit()   
+
+    return con
+
+
 def fetch_paper_info(query):
+    print("Looking for reference at Crossref...")
     # Fetch the doi
     cr = Crossref()
     res = cr.works(query=query, limit=1)
@@ -35,14 +55,17 @@ def fetch_paper_info(query):
     return Reference(res['message'])
 
 
-  
 REF = "references.txt"
 with open(REF, "r") as f:
     content = f.readlines()
 
 
-ref = fetch_paper_info(content[3])
+con = init_db(content)
 
-pprint(ref.title)
+print(con.execute("SELECT * FROM refs LIMIT 1").fetchone()[0])
 
+con.close()
+
+#ref = fetch_paper_info(content[3])
+#pprint(ref.authors)
 
