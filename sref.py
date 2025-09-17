@@ -1,6 +1,11 @@
-from habanero import Crossref
-from pprint import pprint
+import argparse
+import os
 import sqlite3
+
+from habanero import Crossref
+
+# TODO: Format authors names
+# TODO: Check if paper or book
 
 
 class Reference():
@@ -14,10 +19,6 @@ class Reference():
         self.pages = message['page']
         self.issue = message['issue']
         self.url = message['URL']
-
-
-# TODO: Format authors names
-# TODO: Check if paper or book
 
 
 def init_db(content):
@@ -35,7 +36,7 @@ def init_db(content):
 
     cur.executemany(
         "INSERT INTO refs(input_ref) VALUES(?)",
-        [(r,) for r in content]
+        [(r.strip(),) for r in content]
     )
     con.commit()   
 
@@ -55,17 +56,32 @@ def fetch_paper_info(query):
     return Reference(res['message'])
 
 
-REF = "references.txt"
-with open(REF, "r") as f:
-    content = f.readlines()
+def read_file(file):
+    if not os.path.isfile(file):
+        print(f"Error: not a file. {file}")
+        exit(1)
+    
+    with open(file, "r") as f:
+        return f.readlines()
 
 
-con = init_db(content)
 
-print(con.execute("SELECT * FROM refs LIMIT 1").fetchone()[0])
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
 
-con.close()
+    parser.add_argument("file")
 
-#ref = fetch_paper_info(content[3])
-#pprint(ref.authors)
+    args = parser.parse_args()
+
+    content = read_file(args.file)
+    print(content) 
+
+#con = init_db(content)
+#print(con.execute("SELECT * FROM refs LIMIT 1").fetchone()[0])
+#con.close()
+
+#ref = fetch_paper_info(content[0])
+#print(ref.authors)
+
+
 
