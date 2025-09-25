@@ -8,24 +8,6 @@ import (
     "github.com/caltechlibrary/crossrefapi"
 )
 
-//  """
-//  %A    authors. The last one separated with '&'.
-//  %A10  only first ten authors
-//  %Y    year
-//  %T    title
-//  %J    journal name
-//  %j    abbreviated journal name
-//  %V    volumen
-//  %P    pages
-//  %D    DOI
-//  %U    URL
-//  
-//  For example:
-//  %A.(%Y).%T.%V(%I)%P.%D 
-//  """
-
-
-
 // See the structure of Message here: https://github.com/caltechlibrary/crossrefapi/blob/main/works.go
 
 type Person struct {
@@ -46,13 +28,12 @@ type Reference struct {
     URL          string   `json:"url"`
 }
 
-
-func (r *Reference) ToJson() string {
-    jsonData, err := json.Marshal(r)
+func (r *Reference) ToJson() []byte {
+    jsonData, err := json.MarshalIndent(r, "", " ")
     if err != nil {
         log.Fatal(err)
     }
-    return string(jsonData)
+    return jsonData
 }
 
 func SearchDoi(doi string) Reference {
