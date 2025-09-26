@@ -58,7 +58,6 @@ func readJson(path string) {
         panic(err)
     }
 
-    
     var ref []crossref.Reference
     json.Unmarshal(bytes, &ref)
 

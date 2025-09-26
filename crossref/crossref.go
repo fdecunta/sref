@@ -36,7 +36,10 @@ func (r *Reference) ToJson() []byte {
     return jsonData
 }
 
+
 func SearchDoi(doi string) Reference {
+
+    // TODO: don't hardcode the email
     client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
     if err != nil {
         log.Fatal(err)
