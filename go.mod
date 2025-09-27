@@ -1,6 +1,8 @@
 module sref
 
-go 1.19
+go 1.23.4
+
+toolchain go1.24.4
 
 require github.com/caltechlibrary/crossrefapi v1.0.9
 

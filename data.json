@@ -1,61 +1,523 @@
 {
- "type": "journal-article",
- "doi": "10.1111/j.1461-0248.2008.01192.x",
- "title": "A cross‐system synthesis of consumer and nutrient resource control on producer biomass",
- "author": [
-  {
-   "given": "Daniel S.",
-   "family": "Gruner"
+  "10.1002/ps.1488": {
+    "type": "journal-article",
+    "doi": "10.1002/ps.1488",
+    "title": "Glyphosate‐resistant weeds of South American cropping systems: an overview",
+    "author": [
+      {
+        "given": "Martin M",
+        "family": "Vila‐Aiub"
+      },
+      {
+        "given": "Ribas A",
+        "family": "Vidal"
+      },
+      {
+        "given": "Maria C",
+        "family": "Balbi"
+      },
+      {
+        "given": "Pedro E",
+        "family": "Gundel"
+      },
+      {
+        "given": "Frederico",
+        "family": "Trucco"
+      },
+      {
+        "given": "Claudio M",
+        "family": "Ghersa"
+      }
+    ],
+    "year": 2007,
+    "journal": "Pest Management Science",
+    "journal-short": "Pest Management Science",
+    "page": "366-371",
+    "volume": "64",
+    "url": "https://doi.org/10.1002/ps.1488"
   },
-  {
-   "given": "Jennifer E.",
-   "family": "Smith"
+  "10.1111/j.1461-0248.2008.01192.x": {
+    "type": "journal-article",
+    "doi": "10.1111/j.1461-0248.2008.01192.x",
+    "title": "A cross‐system synthesis of consumer and nutrient resource control on producer biomass",
+    "author": [
+      {
+        "given": "Daniel S.",
+        "family": "Gruner"
+      },
+      {
+        "given": "Jennifer E.",
+        "family": "Smith"
+      },
+      {
+        "given": "Eric W.",
+        "family": "Seabloom"
+      },
+      {
+        "given": "Stuart A.",
+        "family": "Sandin"
+      },
+      {
+        "given": "Jacqueline T.",
+        "family": "Ngai"
+      },
+      {
+        "given": "Helmut",
+        "family": "Hillebrand"
+      },
+      {
+        "given": "W. Stanley",
+        "family": "Harpole"
+      },
+      {
+        "given": "James J.",
+        "family": "Elser"
+      },
+      {
+        "given": "Elsa E.",
+        "family": "Cleland"
+      },
+      {
+        "given": "Matthew E. S.",
+        "family": "Bracken"
+      },
+      {
+        "given": "Elizabeth T.",
+        "family": "Borer"
+      },
+      {
+        "given": "Benjamin M.",
+        "family": "Bolker"
+      }
+    ],
+    "year": 2008,
+    "journal": "Ecology Letters",
+    "journal-short": "Ecology Letters",
+    "page": "740-755",
+    "volume": "11",
+    "url": "https://doi.org/10.1111/j.1461-0248.2008.01192.x"
   },
-  {
-   "given": "Eric W.",
-   "family": "Seabloom"
+  "10.1111/j.1600-0706.2011.19299.x": {
+    "type": "journal-article",
+    "doi": "10.1111/j.1600-0706.2011.19299.x",
+    "title": "Incorporating the process of vertical transmission into understanding of host–symbiont dynamics",
+    "author": [
+      {
+        "given": "P. E.",
+        "family": "Gundel"
+      },
+      {
+        "given": "J. A.",
+        "family": "Rudgers"
+      },
+      {
+        "given": "C. M.",
+        "family": "Ghersa"
+      }
+    ],
+    "year": 2011,
+    "journal": "Oikos",
+    "journal-short": "Oikos",
+    "page": "1121-1128",
+    "volume": "120",
+    "url": "https://doi.org/10.1111/j.1600-0706.2011.19299.x"
   },
-  {
-   "given": "Stuart A.",
-   "family": "Sandin"
+  "10.1126/sciadv.aau3114": {
+    "type": "journal-article",
+    "doi": "10.1126/sciadv.aau3114",
+    "title": "Biodiversity recovery of Neotropical secondary forests",
+    "author": [
+      {
+        "given": "Danaë M. A.",
+        "family": "Rozendaal"
+      },
+      {
+        "given": "Frans",
+        "family": "Bongers"
+      },
+      {
+        "given": "T. Mitchell",
+        "family": "Aide"
+      },
+      {
+        "given": "Esteban",
+        "family": "Alvarez-Dávila"
+      },
+      {
+        "given": "Nataly",
+        "family": "Ascarrunz"
+      },
+      {
+        "given": "Patricia",
+        "family": "Balvanera"
+      },
+      {
+        "given": "Justin M.",
+        "family": "Becknell"
+      },
+      {
+        "given": "Tony V.",
+        "family": "Bentos"
+      },
+      {
+        "given": "Pedro H. S.",
+        "family": "Brancalion"
+      },
+      {
+        "given": "George A. L.",
+        "family": "Cabral"
+      },
+      {
+        "given": "Sofia",
+        "family": "Calvo-Rodriguez"
+      },
+      {
+        "given": "Jerome",
+        "family": "Chave"
+      },
+      {
+        "given": "Ricardo G.",
+        "family": "César"
+      },
+      {
+        "given": "Robin L.",
+        "family": "Chazdon"
+      },
+      {
+        "given": "Richard",
+        "family": "Condit"
+      },
+      {
+        "given": "Jorn S.",
+        "family": "Dallinga"
+      },
+      {
+        "given": "Jarcilene S.",
+        "family": "de Almeida-Cortez"
+      },
+      {
+        "given": "Ben",
+        "family": "de Jong"
+      },
+      {
+        "given": "Alexandre",
+        "family": "de Oliveira"
+      },
+      {
+        "given": "Julie S.",
+        "family": "Denslow"
+      },
+      {
+        "given": "Daisy H.",
+        "family": "Dent"
+      },
+      {
+        "given": "Saara J.",
+        "family": "DeWalt"
+      },
+      {
+        "given": "Juan Manuel",
+        "family": "Dupuy"
+      },
+      {
+        "given": "Sandra M.",
+        "family": "Durán"
+      },
+      {
+        "given": "Loïc P.",
+        "family": "Dutrieux"
+      },
+      {
+        "given": "Mario M.",
+        "family": "Espírito-Santo"
+      },
+      {
+        "given": "María C.",
+        "family": "Fandino"
+      },
+      {
+        "given": "G. Wilson",
+        "family": "Fernandes"
+      },
+      {
+        "given": "Bryan",
+        "family": "Finegan"
+      },
+      {
+        "given": "Hernando",
+        "family": "García"
+      },
+      {
+        "given": "Noel",
+        "family": "Gonzalez"
+      },
+      {
+        "given": "Vanessa Granda",
+        "family": "Moser"
+      },
+      {
+        "given": "Jefferson S.",
+        "family": "Hall"
+      },
+      {
+        "given": "José Luis",
+        "family": "Hernández-Stefanoni"
+      },
+      {
+        "given": "Stephen",
+        "family": "Hubbell"
+      },
+      {
+        "given": "Catarina C.",
+        "family": "Jakovac"
+      },
+      {
+        "given": "Alma Johanna",
+        "family": "Hernández"
+      },
+      {
+        "given": "André B.",
+        "family": "Junqueira"
+      },
+      {
+        "given": "Deborah",
+        "family": "Kennard"
+      },
+      {
+        "given": "Denis",
+        "family": "Larpin"
+      },
+      {
+        "given": "Susan G.",
+        "family": "Letcher"
+      },
+      {
+        "given": "Juan-Carlos",
+        "family": "Licona"
+      },
+      {
+        "given": "Edwin",
+        "family": "Lebrija-Trejos"
+      },
+      {
+        "given": "Erika",
+        "family": "Marín-Spiotta"
+      },
+      {
+        "given": "Miguel",
+        "family": "Martínez-Ramos"
+      },
+      {
+        "given": "Paulo E. S.",
+        "family": "Massoca"
+      },
+      {
+        "given": "Jorge A.",
+        "family": "Meave"
+      },
+      {
+        "given": "Rita C. G.",
+        "family": "Mesquita"
+      },
+      {
+        "given": "Francisco",
+        "family": "Mora"
+      },
+      {
+        "given": "Sandra C.",
+        "family": "Müller"
+      },
+      {
+        "given": "Rodrigo",
+        "family": "Muñoz"
+      },
+      {
+        "given": "Silvio Nolasco",
+        "family": "de Oliveira Neto"
+      },
+      {
+        "given": "Natalia",
+        "family": "Norden"
+      },
+      {
+        "given": "Yule R. F.",
+        "family": "Nunes"
+      },
+      {
+        "given": "Susana",
+        "family": "Ochoa-Gaona"
+      },
+      {
+        "given": "Edgar",
+        "family": "Ortiz-Malavassi"
+      },
+      {
+        "given": "Rebecca",
+        "family": "Ostertag"
+      },
+      {
+        "given": "Marielos",
+        "family": "Peña-Claros"
+      },
+      {
+        "given": "Eduardo A.",
+        "family": "Pérez-García"
+      },
+      {
+        "given": "Daniel",
+        "family": "Piotto"
+      },
+      {
+        "given": "Jennifer S.",
+        "family": "Powers"
+      },
+      {
+        "given": "José",
+        "family": "Aguilar-Cano"
+      },
+      {
+        "given": "Susana",
+        "family": "Rodriguez-Buritica"
+      },
+      {
+        "given": "Jorge",
+        "family": "Rodríguez-Velázquez"
+      },
+      {
+        "given": "Marco Antonio",
+        "family": "Romero-Romero"
+      },
+      {
+        "given": "Jorge",
+        "family": "Ruíz"
+      },
+      {
+        "given": "Arturo",
+        "family": "Sanchez-Azofeifa"
+      },
+      {
+        "given": "Arlete Silva",
+        "family": "de Almeida"
+      },
+      {
+        "given": "Whendee L.",
+        "family": "Silver"
+      },
+      {
+        "given": "Naomi B.",
+        "family": "Schwartz"
+      },
+      {
+        "given": "William Wayt",
+        "family": "Thomas"
+      },
+      {
+        "given": "Marisol",
+        "family": "Toledo"
+      },
+      {
+        "given": "Maria",
+        "family": "Uriarte"
+      },
+      {
+        "given": "Everardo Valadares",
+        "family": "de Sá Sampaio"
+      },
+      {
+        "given": "Michiel",
+        "family": "van Breugel"
+      },
+      {
+        "given": "Hans",
+        "family": "van der Wal"
+      },
+      {
+        "given": "Sebastião Venâncio",
+        "family": "Martins"
+      },
+      {
+        "given": "Maria D. M.",
+        "family": "Veloso"
+      },
+      {
+        "given": "Hans F. M.",
+        "family": "Vester"
+      },
+      {
+        "given": "Alberto",
+        "family": "Vicentini"
+      },
+      {
+        "given": "Ima C. G.",
+        "family": "Vieira"
+      },
+      {
+        "given": "Pedro",
+        "family": "Villa"
+      },
+      {
+        "given": "G. Bruce",
+        "family": "Williamson"
+      },
+      {
+        "given": "Kátia J.",
+        "family": "Zanini"
+      },
+      {
+        "given": "Jess",
+        "family": "Zimmerman"
+      },
+      {
+        "given": "Lourens",
+        "family": "Poorter"
+      }
+    ],
+    "year": 2019,
+    "journal": "Science Advances",
+    "journal-short": "Sci. Adv.",
+    "page": "",
+    "volume": "5",
+    "url": "https://doi.org/10.1126/sciadv.aau3114"
   },
-  {
-   "given": "Jacqueline T.",
-   "family": "Ngai"
-  },
-  {
-   "given": "Helmut",
-   "family": "Hillebrand"
-  },
-  {
-   "given": "W. Stanley",
-   "family": "Harpole"
-  },
-  {
-   "given": "James J.",
-   "family": "Elser"
-  },
-  {
-   "given": "Elsa E.",
-   "family": "Cleland"
-  },
-  {
-   "given": "Matthew E. S.",
-   "family": "Bracken"
-  },
-  {
-   "given": "Elizabeth T.",
-   "family": "Borer"
-  },
-  {
-   "given": "Benjamin M.",
-   "family": "Bolker"
+  "https://doi.org/10.1002/14651858.CD003463.pub2": {
+    "type": "journal-article",
+    "doi": "10.1002/14651858.cd003463.pub2",
+    "title": "Trypanocidal drugs for chronic asymptomatic\u003ci\u003eTrypanosoma cruzi\u003c/i\u003einfection",
+    "author": [
+      {
+        "given": "Juan Carlos",
+        "family": "Villar"
+      },
+      {
+        "given": "Juan Guillermo",
+        "family": "Perez"
+      },
+      {
+        "given": "Olga Lucia",
+        "family": "Cortes"
+      },
+      {
+        "given": "Adelina",
+        "family": "Riarte"
+      },
+      {
+        "given": "Micah",
+        "family": "Pepper"
+      },
+      {
+        "given": "Jose Antonio",
+        "family": "Marin-Neto"
+      },
+      {
+        "given": "Gordon H",
+        "family": "Guyatt"
+      }
+    ],
+    "year": 2014,
+    "journal": "Cochrane Database of Systematic Reviews",
+    "journal-short": "",
+    "page": "",
+    "volume": "2014",
+    "url": "https://doi.org/10.1002/14651858.cd003463.pub2"
   }
- ],
- "year": 2008,
- "journal": "Ecology Letters",
- "journal-short": "Ecology Letters",
- "page": "740-755",
- "volume": "11",
- "url": "https://doi.org/10.1111/j.1461-0248.2008.01192.x"
 }

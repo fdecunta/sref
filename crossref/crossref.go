@@ -1,7 +1,6 @@
 package crossref
 
 import (
-    "encoding/json"
     "log"
     "strings"
 
@@ -26,14 +25,6 @@ type Reference struct {
     Page         string   `json:"page"`
     Volume       string   `json:"volume"`
     URL          string   `json:"url"`
-}
-
-func (r *Reference) ToJson() []byte {
-    jsonData, err := json.MarshalIndent(r, "", " ")
-    if err != nil {
-        log.Fatal(err)
-    }
-    return jsonData
 }
 
 
