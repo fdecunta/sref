@@ -25,6 +25,7 @@ type Reference struct {
     Page         string   `json:"page"`
     Volume       string   `json:"volume"`
     URL          string   `json:"url"`
+    Abstract     string   `json:"abstract"`
 }
 
 
@@ -34,11 +35,12 @@ func SearchDoi(doi string) Reference {
     client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
     if err != nil {
         log.Fatal(err)
-        // handle error...
+        // TODO: return some useful msg
     }
     works, err := client.Works(doi)
    
     if err != nil {
+        // TODO: return some useful msg
         log.Fatal(err)
     }
     if works.Status != "ok" {
@@ -63,6 +65,7 @@ func SearchDoi(doi string) Reference {
         Page: msg.Page,
         Volume: msg.Volume,
         URL: msg.URL,
+        Abstract: msg.Abstract,
     }
 
     return newRef

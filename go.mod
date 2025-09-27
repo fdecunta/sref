@@ -9,4 +9,7 @@ require github.com/caltechlibrary/crossrefapi v1.0.9
 require (
 	github.com/caltechlibrary/doitools v0.0.3 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/jroimartin/gocui v0.5.0 // indirect
+	github.com/mattn/go-runewidth v0.0.9 // indirect
+	github.com/nsf/termbox-go v1.1.1 // indirect
 )

@@ -2,6 +2,7 @@ package db
 
 import (
     "encoding/json"
+    "errors"
     "os"
     "sref/crossref"
 )
@@ -36,4 +37,45 @@ func LoadDB(filename string) (map[string]crossref.Reference, error) {
 	}
 	return db, nil
 }
+
+
+func QueryDOI(file string, doi string) (crossref.Reference, error) {
+    var r crossref.Reference
+
+	data, err := LoadDB(file)
+	if err != nil {
+		return r, err
+	}
+
+    if ref, ok := data[doi]; ok {
+        r = ref
+    } else {
+        r = crossref.SearchDoi(doi)
+    }
+
+    return r, nil
+}
+
+func AddReference(file string, doi string) (crossref.Reference, error) {
+    var r crossref.Reference
+
+   	data, err := LoadDB(file)
+	if err != nil {
+		return r, err
+	}
+
+    if _, ok := data[doi]; ok {
+        return r, errors.New("DOI already exists.")
+    } 
+
+    r = crossref.SearchDoi(doi)
+    data[doi] = r
+
+	if err := SaveDB(file, data); err != nil {
+		return r, err
+	}
+
+    return r, nil
+}
+
 
