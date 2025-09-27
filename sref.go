@@ -30,7 +30,7 @@ func main() {
 
     if add {
         if len(doi) == 0 {
-            // TODO: validate DOI. At least that looks like a DOOI
+            // TODO: validate DOI. At least that looks like a DOI
             fmt.Fprintf(os.Stderr, "missing DOI\n")
             os.Exit(1)
         }
@@ -59,7 +59,7 @@ func main() {
         if err != nil {
             log.Fatal(err)
         }
-        fmt.Println(format.FormatCite(r))
+        format.PrintAbstract(r)
     }
 }
 

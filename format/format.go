@@ -10,7 +10,7 @@ import (
 func FormatCite(r crossref.Reference) string {
     author := formatAuthor(r)
 
-    return fmt.Sprintf("%s(%d). %s. %s %s(%s). %s",
+    return fmt.Sprintf("%s (%d). %s. %s %s(%s). %s",
          author, r.Year, r.Title, r.Journal, r.Volume, r.Page, r.URL)
 }
 
@@ -55,4 +55,11 @@ func toInitials(n string) string {
     }
 
     return s
+}
+
+
+func PrintAbstract(r crossref.Reference) {
+    fmt.Printf("%s\n\n", r.Title)
+    fmt.Printf("%s, %d | %s\n\n", r.Author[0].Family, r.Year, r.Journal)
+    fmt.Printf("Abstract:\n%s\n", r.Abstract)
 }

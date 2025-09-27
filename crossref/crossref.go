@@ -7,6 +7,8 @@ import (
     "github.com/caltechlibrary/crossrefapi"
 )
 
+// TODO: Add support for books!
+
 // See the structure of Message here: https://github.com/caltechlibrary/crossrefapi/blob/main/works.go
 
 type Person struct {

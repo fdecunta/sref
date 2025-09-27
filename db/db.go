@@ -69,7 +69,7 @@ func AddReference(file string, doi string) (crossref.Reference, error) {
     } 
 
     r = crossref.SearchDoi(doi)
-    data[doi] = r
+    data[r.DOI] = r
 
 	if err := SaveDB(file, data); err != nil {
 		return r, err
