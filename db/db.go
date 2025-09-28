@@ -42,10 +42,10 @@ func LoadDB(filename string) (map[string]crossref.Reference, error) {
 func QueryDOI(file string, doi string) (crossref.Reference, error) {
     var r crossref.Reference
 
-	data, err := LoadDB(file)
-	if err != nil {
-		return r, err
-	}
+    data, err := LoadDB(file)
+    if err != nil {
+        return r, err
+    }
 
     if ref, ok := data[doi]; ok {
         r = ref
@@ -56,14 +56,16 @@ func QueryDOI(file string, doi string) (crossref.Reference, error) {
     return r, nil
 }
 
+
 func AddReference(file string, doi string) (crossref.Reference, error) {
     var r crossref.Reference
+    
+    data, err := LoadDB(file)
+    if err != nil {
+        return r, err
+    }
 
-   	data, err := LoadDB(file)
-	if err != nil {
-		return r, err
-	}
-
+    // TODO: This is problematic because i'm not using stric DOI as input, but https... etc
     if _, ok := data[doi]; ok {
         return r, errors.New("DOI already exists.")
     } 
@@ -71,11 +73,32 @@ func AddReference(file string, doi string) (crossref.Reference, error) {
     r = crossref.SearchDoi(doi)
     data[r.DOI] = r
 
-	if err := SaveDB(file, data); err != nil {
-		return r, err
-	}
+    if err := SaveDB(file, data); err != nil {
+        return r, err
+    }
 
     return r, nil
 }
 
 
+func DeleteReference(file string, doi string) (error) {
+    data, err := LoadDB(file)
+    if err != nil {
+        return err
+    }
+
+    // TODO: This is problematic because i'm not using stric DOI as input, but https... etc
+    if _, ok := data[doi]; !ok {
+        return errors.New("DOI not found.")
+    } 
+
+    // TODO: Should not look in crossref. Need a way of getting the correct key
+    r := crossref.SearchDoi(doi)
+    delete(data, r.DOI)
+
+    if err := SaveDB(file, data); err != nil {
+        return err
+    }
+
+    return nil
+}
