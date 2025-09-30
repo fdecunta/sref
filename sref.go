@@ -11,6 +11,7 @@ import (
     "strings"
 
     "sref/db"
+    "sref/crossref"
 )
 
 var file string
@@ -19,14 +20,17 @@ var doi string
 var add bool
 var del bool
 var read bool
+var edit bool
+
+var d *db.DataBase
 
 func main() {
     flag.StringVar(&file, "file", "", "JSON file")
     flag.StringVar(&input, "input", "", "INPUT to use. Must be DOI or TITLE")
-
     flag.BoolVar(&add, "a", false, "Add reference")
     flag.BoolVar(&del, "d", false, "Delete reference")
     flag.BoolVar(&read, "r", false, "Read reference")
+    flag.BoolVar(&edit, "e", false, "Edit reference")
     flag.Parse()
 
     file, err := assertFile(file)
@@ -36,6 +40,11 @@ func main() {
         os.Exit(1)
     }
 
+    d, err = db.Open(file)
+    if err != nil {
+        log.Fatal(err)
+    }
+
     doi, err := assertDoi(input)
     if err != nil {
         fmt.Println(err)
@@ -43,44 +52,42 @@ func main() {
         os.Exit(1)
     }
 
-    if read {
-        r, err := db.Get(file, doi)
-        if err != nil {
-           log.Fatal(err)
-        }
-           
-        fmt.Println(r)
-        return
-    }
+    r := d.Get(doi)
 
-    if add {
-        err := db.AddReference(file, doi) 
+    if read {
+        if r == nil {
+           fmt.Println("DOI not found")
+           return
+        }
+        fmt.Println(*r)
+    } else if add {
+        if r != nil {
+            fmt.Println("DOI already exists")
+            return
+        }
+        err := d.Set(doi, crossref.SearchDoi(doi))
         if err != nil {
             fmt.Fprintf(os.Stderr, "Failed fo store reference: %s\n", err)
             os.Exit(1)
         }
-        return 
-    }
-
-    if del {
-        if err := db.DeleteReference(file, doi); err != nil {
+    } else if del {
+        if r == nil {
+            fmt.Println("DOI not found")
+            return
+        }
+        err := d.Delete(doi)
+        if err != nil {
             fmt.Fprintf(os.Stderr, "Failed fo delete DOI: %s\n", err)
             os.Exit(1)
         }
-        return 
-    }
-}
-
-
-func isJsonFile(path string) error {
-    if _, err := os.Stat(path); os.IsNotExist(err) {
-        return errors.New("File does not exist")
+    } else if edit {
+        if r == nil {
+            fmt.Println("DOI not found")
+            return
+        }
+        // TODO:
+        fmt.Println("not implemented")
     } 
-
-    if filepath.Ext(path) != ".json" {
-        return errors.New("File is not JSON")
-    }
-    return nil
 }
 
 
@@ -106,14 +113,27 @@ func GetDefaultJSON() (string, error) {
 }
 
 
-func IsDoi(s string) bool {
-   re := regexp.MustCompile(`10\.\d{4,}/\S+`)
-   match := re.FindString(s)
-   if match != "" {
-       return true
-   } else {
-       return false
-   }
+func assertFile(file string) (string, error) {
+    if file == "" {
+        var err error
+        file, err = GetDefaultJSON()
+        if err != nil {
+            return "", err
+        }
+    }
+
+    if _, err := os.Stat(file); err != nil {
+        if os.IsNotExist(err) {
+            return "", errors.New("File does not exist")
+        }
+        return "", err
+    } 
+
+    if filepath.Ext(file) != ".json" {
+        return "", errors.New("File is not JSON")
+    }
+
+    return file, nil
 }
 
 
@@ -124,23 +144,6 @@ func CaptureDoi(s string) (string, bool) {
         return match, true
     }
     return "", false
-}
-
-
-func assertFile(file string) (string, error) {
-    if len(file) == 0 {
-        var err error
-        file, err = GetDefaultJSON()
-        if err != nil {
-            return "", err
-        }
-    }
-
-    if err := isJsonFile(file); err != nil {
-        fmt.Fprintf(os.Stderr, "Can't read file: %s\n", err)
-        os.Exit(1)
-    }
-    return file, nil
 }
 
 

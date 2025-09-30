@@ -3,113 +3,85 @@ package db
 import (
     "encoding/json"
     "errors"
+    "io"
     "log"
     "os"
     "strings"
     "sref/crossref"
 )
 
-var db = make(map[string]crossref.Reference)
 
-func WriteDB(filename string, db map[string]crossref.Reference) error {
-	f, err := os.Create(filename)
+type DataBase struct {
+    Path string
+    Table map[string]crossref.Reference
+}
+
+
+func Open(path string) (*DataBase, error) {
+    d := DataBase{
+        Path: path,
+        Table: make(map[string]crossref.Reference),
+    }
+
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	err = json.NewDecoder(f).Decode(&d.Table)
+    if err == io.EOF {
+        return &d, nil
+    }
+	if err != nil {
+		return nil, err
+	}
+
+	return &d, nil
+}
+
+
+func (db *DataBase) Write() error {
+	f, err := os.Create(db.Path)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
+
 	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ") // pretty print
-	return enc.Encode(db)
+	enc.SetIndent("", "  ") 
+
+	return enc.Encode(db.Table)
 }
 
 
-func LoadDB(filename string) (map[string]crossref.Reference, error) {
-	f, err := os.Open(filename)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return make(map[string]crossref.Reference), nil // start empty
-		}
-		return nil, err
-	}
-	defer f.Close()
-	var db map[string]crossref.Reference
-	err = json.NewDecoder(f).Decode(&db)
-	if err != nil {
-		return make(map[string]crossref.Reference), nil
-	}
-	return db, nil
-}
-
-
-func Get(file string, doi string) (crossref.Reference, error) {
-    var r crossref.Reference
-
-    data, err := LoadDB(file)
-    if err != nil {
-        return r, err
-    }
-
-    ref, ok := data[doi]
+func (db *DataBase) Get(doi string) *crossref.Reference {
+    r, ok := db.Table[doi]
     if !ok {
-        return crossref.Reference{}, errors.New("DOI not found")
+        return nil
     } 
-    r = ref
-
-    return r, nil
+    return &r
 }
 
 
-func Set(file string, doi string, r crossref.Reference) error {
-    data, err := LoadDB(file)
-    if err != nil {
+func (db *DataBase) Set(doi string, r *crossref.Reference) error {
+    db.Table[doi] = *r
+
+    if err := db.Write(); err != nil {
         return err
     }
-
-    if _, ok := data[doi]; ok {
-        return errors.New("DOI already exists.")
-    } 
-
-    if err := WriteDB(file, data); err != nil {
-        return err
-    }
-
     return nil
 }
 
 
-func AddReference(file string, doi string) error {
-    data, err := LoadDB(file)
-    if err != nil {
-        return err
-    }
-
-    if _, ok := data[doi]; ok {
-        return errors.New("DOI already exists.")
-    } 
-
-    r := crossref.SearchDoi(doi)
-    data[doi] = *r
-
-    if err := WriteDB(file, data); err != nil {
-        return err
-    }
-
-    return nil
-}
-
-
-func DeleteReference(file string, doi string) (error) {
-    data, err := LoadDB(file)
-    if err != nil {
-        return err
-    }
-
-    if _, ok := data[doi]; !ok {
+func (db *DataBase) Delete(doi string) error {
+    if _, ok := db.Table[doi]; !ok {
         return errors.New("DOI not found.")
     } 
-    delete(data, doi)
 
-    if err := WriteDB(file, data); err != nil {
+    delete(db.Table, doi)
+
+    if err := db.Write(); err != nil {
         return err
     }
 
@@ -118,14 +90,14 @@ func DeleteReference(file string, doi string) (error) {
 
 
 func SearchByTitle(file string, title string) (*crossref.Reference, error) {
-    data, err := LoadDB(file)
+    data, err := Open(file)
     if err != nil {
         return nil, err
     }
 
-    for _, d := range data {
+    for _, d := range data.Table {
         if strings.Contains(strings.ToLower(d.Title), strings.ToLower(title)) {
-            ref := data[d.DOI]
+            ref := data.Table[d.DOI]
             return &ref, nil
         }
     }
