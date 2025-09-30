@@ -2,93 +2,72 @@ package main
 
 import (
     "errors"
-    "io"
     "log"
     "flag"
-    "net/http"
-    "net/url"
     "fmt"
     "os"
     "path/filepath"
+    "regexp"
+    "strings"
+
     "sref/db"
-    "sref/format"
 )
 
 var file string
+var input string
 var doi string
 var add bool
 var del bool
+var read bool
 
 func main() {
     flag.StringVar(&file, "file", "", "JSON file")
-    flag.StringVar(&doi, "doi", "", "DOI to use")
-    flag.BoolVar(&add, "a", false, "Add DOI's reference")
-    flag.BoolVar(&del, "d", false, "Delete DOI's reference")
+    flag.StringVar(&input, "input", "", "INPUT to use. Must be DOI or TITLE")
+
+    flag.BoolVar(&add, "a", false, "Add reference")
+    flag.BoolVar(&del, "d", false, "Delete reference")
+    flag.BoolVar(&read, "r", false, "Read reference")
     flag.Parse()
 
-
-    // TODO: unteresting that it fails in get this on top of the search!
-    SearchPaper("Plant neighbourhood diversity effects on leaf traits: A meta‐analysis")
-
-    if len(file) == 0 {
-        var err error
-        file, err = GetDefaultJSON()
-        if err != nil {
-            log.Fatal(err)
-        }
-    }
-
-    if err := isJsonFile(file); err != nil {
-        fmt.Fprintf(os.Stderr, "Can't read file: %s\n", err)
+    file, err := assertFile(file)
+    if err != nil {
+        fmt.Println(err)
+        flag.Usage()
         os.Exit(1)
     }
 
-    if add {
-        if len(doi) == 0 {
-            // TODO: validate DOI. At least that looks like a DOI
-            fmt.Fprintf(os.Stderr, "missing DOI\n")
-            os.Exit(1)
-        }
+    doi, err := assertDoi(input)
+    if err != nil {
+        fmt.Println(err)
+        flag.Usage()
+        os.Exit(1)
+    }
 
-        r, err := db.AddReference(file, doi) 
+    if read {
+        r, err := db.Get(file, doi)
         if err != nil {
-            fmt.Fprintf(os.Stderr, "Failed fo save DOI: %s\n", err)
+           log.Fatal(err)
+        }
+           
+        fmt.Println(r)
+        return
+    }
+
+    if add {
+        err := db.AddReference(file, doi) 
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Failed fo store reference: %s\n", err)
             os.Exit(1)
         }
-        fmt.Println(format.FormatCite(r))
         return 
     }
 
     if del {
-        if len(doi) == 0 {
-            // TODO: validate DOI. At least that looks like a DOI
-            fmt.Fprintf(os.Stderr, "missing DOI\n")
-            os.Exit(1)
-        }
-
         if err := db.DeleteReference(file, doi); err != nil {
             fmt.Fprintf(os.Stderr, "Failed fo delete DOI: %s\n", err)
             os.Exit(1)
         }
         return 
-    }
-
-    data, err := db.LoadDB(file)
-    if err != nil {
-        log.Panicln(err)
-    }
-
-    if len(doi) == 0 {
-        for _, r := range data {
-        fmt.Println(format.FormatCite(r))
-        }
-
-    } else {
-        r, err := db.QueryDOI(file, doi)
-        if err != nil {
-            log.Fatal(err)
-        }
-        format.PrintAbstract(r)
     }
 }
 
@@ -127,23 +106,58 @@ func GetDefaultJSON() (string, error) {
 }
 
 
-func SearchPaper(s string) {
-    baseURL := fmt.Sprintf("https://api.crossref.org/works")
-    params := url.Values{}
-    params.Add("query.title", s) 
+func IsDoi(s string) bool {
+   re := regexp.MustCompile(`10\.\d{4,}/\S+`)
+   match := re.FindString(s)
+   if match != "" {
+       return true
+   } else {
+       return false
+   }
+}
 
-    requestURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
 
-    resp, err := http.Get(requestURL)
-    if err != nil {
-        fmt.Printf("error making http request: %s\n", err)
-        os.Exit(1)
-     }
-    defer resp.Body.Close()
-
-    body, err := io.ReadAll(resp.Body)
-    if err != nil {
-        log.Fatal(err)
+func CaptureDoi(s string) (string, bool) {
+    re := regexp.MustCompile(`10\.\d{4,}/\S+`)
+    match := re.FindString(s)
+    if match != "" {
+        return match, true
     }
-    fmt.Println(string(body))
+    return "", false
+}
+
+
+func assertFile(file string) (string, error) {
+    if len(file) == 0 {
+        var err error
+        file, err = GetDefaultJSON()
+        if err != nil {
+            return "", err
+        }
+    }
+
+    if err := isJsonFile(file); err != nil {
+        fmt.Fprintf(os.Stderr, "Can't read file: %s\n", err)
+        os.Exit(1)
+    }
+    return file, nil
+}
+
+
+func assertDoi(s string) (string, error) {
+    s = strings.TrimSpace(s)
+    if len(s) == 0 {
+        return "", errors.New("empty input")
+    }
+
+    doi, ok := CaptureDoi(s)
+    if !ok {
+        r, err := db.SearchByTitle(file, input)
+        if err != nil {
+            return "", err
+        }
+        doi = r.DOI
+    }
+
+    return doi, nil
 }

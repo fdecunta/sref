@@ -3,13 +3,15 @@ package db
 import (
     "encoding/json"
     "errors"
+    "log"
     "os"
+    "strings"
     "sref/crossref"
 )
 
 var db = make(map[string]crossref.Reference)
 
-func SaveDB(filename string, db map[string]crossref.Reference) error {
+func WriteDB(filename string, db map[string]crossref.Reference) error {
 	f, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -39,7 +41,7 @@ func LoadDB(filename string) (map[string]crossref.Reference, error) {
 }
 
 
-func QueryDOI(file string, doi string) (crossref.Reference, error) {
+func Get(file string, doi string) (crossref.Reference, error) {
     var r crossref.Reference
 
     data, err := LoadDB(file)
@@ -47,37 +49,52 @@ func QueryDOI(file string, doi string) (crossref.Reference, error) {
         return r, err
     }
 
-    if ref, ok := data[doi]; ok {
-        r = ref
-    } else {
-        r = crossref.SearchDoi(doi)
-    }
+    ref, ok := data[doi]
+    if !ok {
+        return crossref.Reference{}, errors.New("DOI not found")
+    } 
+    r = ref
 
     return r, nil
 }
 
 
-func AddReference(file string, doi string) (crossref.Reference, error) {
-    var r crossref.Reference
-    
+func Set(file string, doi string, r crossref.Reference) error {
     data, err := LoadDB(file)
     if err != nil {
-        return r, err
+        return err
     }
 
-    // TODO: This is problematic because i'm not using stric DOI as input, but https... etc
     if _, ok := data[doi]; ok {
-        return r, errors.New("DOI already exists.")
+        return errors.New("DOI already exists.")
     } 
 
-    r = crossref.SearchDoi(doi)
-    data[r.DOI] = r
-
-    if err := SaveDB(file, data); err != nil {
-        return r, err
+    if err := WriteDB(file, data); err != nil {
+        return err
     }
 
-    return r, nil
+    return nil
+}
+
+
+func AddReference(file string, doi string) error {
+    data, err := LoadDB(file)
+    if err != nil {
+        return err
+    }
+
+    if _, ok := data[doi]; ok {
+        return errors.New("DOI already exists.")
+    } 
+
+    r := crossref.SearchDoi(doi)
+    data[doi] = *r
+
+    if err := WriteDB(file, data); err != nil {
+        return err
+    }
+
+    return nil
 }
 
 
@@ -87,18 +104,36 @@ func DeleteReference(file string, doi string) (error) {
         return err
     }
 
-    // TODO: This is problematic because i'm not using stric DOI as input, but https... etc
     if _, ok := data[doi]; !ok {
         return errors.New("DOI not found.")
     } 
+    delete(data, doi)
 
-    // TODO: Should not look in crossref. Need a way of getting the correct key
-    r := crossref.SearchDoi(doi)
-    delete(data, r.DOI)
-
-    if err := SaveDB(file, data); err != nil {
+    if err := WriteDB(file, data); err != nil {
         return err
     }
 
     return nil
 }
+
+
+func SearchByTitle(file string, title string) (*crossref.Reference, error) {
+    data, err := LoadDB(file)
+    if err != nil {
+        return nil, err
+    }
+
+    for _, d := range data {
+        if strings.Contains(strings.ToLower(d.Title), strings.ToLower(title)) {
+            ref := data[d.DOI]
+            return &ref, nil
+        }
+    }
+
+    r := crossref.SearchTitle(title)
+    if r == nil {
+        log.Fatal(err)
+    }
+    return r, nil
+}
+ 

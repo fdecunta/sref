@@ -31,32 +31,13 @@ type Reference struct {
 }
 
 
-func SearchDoi(doi string) Reference {
-
-    // TODO: don't hardcode the email
-    client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
-    if err != nil {
-        log.Fatal(err)
-        // TODO: return some useful msg
-    }
-    works, err := client.Works(doi)
-   
-    if err != nil {
-        // TODO: return some useful msg
-        log.Fatal(err)
-    }
-    if works.Status != "ok" {
-        log.Fatal("request is not ok")
-    }
-    
-    msg := works.Message 
-
+func BuildReference(msg *crossrefapi.Message) *Reference {
     var authorsList []Person
     for _, a := range msg.Author {
         authorsList = append(authorsList, Person{a.Given, a.Family})
     }
 
-    newRef := Reference{
+    r := Reference{
         Type: msg.Type,
         DOI: msg.DOI,
         Title: strings.Join(msg.Title, " "),
@@ -70,5 +51,53 @@ func SearchDoi(doi string) Reference {
         Abstract: msg.Abstract,
     }
 
-    return newRef
+    return &r
+}
+
+
+func SearchDoi(doi string) *Reference {
+    // TODO: don't hardcode the email
+    client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
+    if err != nil {
+        log.Fatal(err)
+    }
+    works, err := client.Works(doi)
+   
+    if err != nil {
+        log.Fatal(err)
+    }
+    if works.Status != "ok" {
+        log.Fatal("request is not ok")
+    }
+    
+    msg := works.Message 
+
+    return BuildReference(msg)
+}
+
+
+func SearchTitle(title string) *Reference {
+    // TODO: don't hardcode the email
+    client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
+    if err != nil {
+        return nil
+    }
+
+    query := crossrefapi.WorksQuery{
+        Fields: &crossrefapi.WorksQueryFields{
+            Title: title,
+        },
+    }
+    works, err := client.QueryWorks(query)
+   
+    if err != nil || works == nil || works.Status != "ok" {
+        return nil
+    }
+    if len(works.Message.Items) == 0 {
+        return nil
+    }
+
+    msg := works.Message.Items[0] 
+
+    return BuildReference(&msg)
 }
