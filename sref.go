@@ -1,6 +1,7 @@
 package main
 
 import (
+    "encoding/json"
     "errors"
     "log"
     "flag"
@@ -10,8 +11,8 @@ import (
     "regexp"
     "strings"
 
-    "sref/db"
     "sref/crossref"
+    "sref/db"
 )
 
 var file string
@@ -21,16 +22,18 @@ var add bool
 var del bool
 var read bool
 var edit bool
+var toJson bool
 
 var d *db.DataBase
 
 func main() {
-    flag.StringVar(&file, "file", "", "JSON file")
-    flag.StringVar(&input, "input", "", "INPUT to use. Must be DOI or TITLE")
-    flag.BoolVar(&add, "a", false, "Add reference")
-    flag.BoolVar(&del, "d", false, "Delete reference")
-    flag.BoolVar(&read, "r", false, "Read reference")
-    flag.BoolVar(&edit, "e", false, "Edit reference")
+    flag.StringVar(&file, "file", "", "Path to the JSON database file")
+    flag.StringVar(&input, "input", "", "Input value to use. Can be a DOI or the paper's title")
+    flag.BoolVar(&add, "a", false, "Add reference to the database")
+    flag.BoolVar(&del, "d", false, "Delete reference from the database")
+    flag.BoolVar(&read, "r", false, "Read reference from the database")
+    flag.BoolVar(&toJson, "json", false, "Print reference(s) in JSON format")
+
     flag.Parse()
 
     file, err := assertFile(file)
@@ -43,6 +46,17 @@ func main() {
     d, err = db.Open(file)
     if err != nil {
         log.Fatal(err)
+    }
+
+    if toJson {
+        for _, i := range d.Table {
+            jsonBytes, err := json.MarshalIndent(i, "", "  ")
+            if err != nil {
+                panic(err)
+            }
+            fmt.Println(string(jsonBytes))         
+        }
+        return
     }
 
     doi, err := assertDoi(input)
@@ -80,13 +94,6 @@ func main() {
             fmt.Fprintf(os.Stderr, "Failed fo delete DOI: %s\n", err)
             os.Exit(1)
         }
-    } else if edit {
-        if r == nil {
-            fmt.Println("DOI not found")
-            return
-        }
-        // TODO:
-        fmt.Println("not implemented")
     } 
 }
 
@@ -155,7 +162,7 @@ func assertDoi(s string) (string, error) {
 
     doi, ok := CaptureDoi(s)
     if !ok {
-        r, err := db.SearchByTitle(file, input)
+        r, err := SearchByTitle(input)
         if err != nil {
             return "", err
         }
@@ -164,3 +171,20 @@ func assertDoi(s string) (string, error) {
 
     return doi, nil
 }
+
+
+func SearchByTitle(title string) (*crossref.Reference, error) {
+    for _, i := range d.Table {
+        if strings.Contains(strings.ToLower(i.Title), strings.ToLower(title)) {
+            ref := d.Table[i.DOI]
+            return &ref, nil
+        }
+    }
+
+    r := crossref.SearchTitle(title)
+    if r == nil {
+        log.Fatal("Can't find this title")
+    }
+    return r, nil
+}
+ 

@@ -4,9 +4,7 @@ import (
     "encoding/json"
     "errors"
     "io"
-    "log"
     "os"
-    "strings"
     "sref/crossref"
 )
 
@@ -87,25 +85,3 @@ func (db *DataBase) Delete(doi string) error {
 
     return nil
 }
-
-
-func SearchByTitle(file string, title string) (*crossref.Reference, error) {
-    data, err := Open(file)
-    if err != nil {
-        return nil, err
-    }
-
-    for _, d := range data.Table {
-        if strings.Contains(strings.ToLower(d.Title), strings.ToLower(title)) {
-            ref := data.Table[d.DOI]
-            return &ref, nil
-        }
-    }
-
-    r := crossref.SearchTitle(title)
-    if r == nil {
-        log.Fatal(err)
-    }
-    return r, nil
-}
- 
