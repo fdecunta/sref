@@ -23,7 +23,6 @@ func main() {
     var add bool
     var del bool
     var read bool
-//    var edit bool
     var toJson bool
 
     flag.StringVar(&file, "file", "", "Path to the JSON database file")
@@ -115,7 +114,7 @@ func Add(d *db.DataBase, r *crossref.Reference, doi string) error {
 }
 
 
-func GetDefaultJSON() (string, error) {
+func GetDefaultJson() (string, error) {
     homeDir, err := os.UserHomeDir()
     if err != nil {
         return "", err
@@ -140,7 +139,7 @@ func GetDefaultJSON() (string, error) {
 func assertFile(file string) (string, error) {
     if file == "" {
         var err error
-        file, err = GetDefaultJSON()
+        file, err = GetDefaultJson()
         if err != nil {
             return "", err
         }
@@ -207,6 +206,5 @@ func QueryTitle(title string) (*crossref.Reference) {
             return &ref
         }
     }
-    
     return nil
 }
