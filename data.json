@@ -1,4 +1,121 @@
 {
+  "10.1046/j.1365-2486.2002.00451.x": {
+    "type": "journal-article",
+    "doi": "10.1046/j.1365-2486.2002.00451.x",
+    "title": "Herbivory in global climate change research: direct effects of rising temperature on insect herbivores",
+    "author": [
+      {
+        "given": "Jeffery S.",
+        "family": "Bale",
+        "sequence": "first"
+      },
+      {
+        "given": "Gregory J.",
+        "family": "Masters",
+        "sequence": "additional"
+      },
+      {
+        "given": "Ian D.",
+        "family": "Hodkinson",
+        "sequence": "additional"
+      },
+      {
+        "given": "Caroline",
+        "family": "Awmack",
+        "sequence": "additional"
+      },
+      {
+        "given": "T. Martijn",
+        "family": "Bezemer",
+        "sequence": "additional"
+      },
+      {
+        "given": "Valerie K.",
+        "family": "Brown",
+        "sequence": "additional"
+      },
+      {
+        "given": "Jennifer",
+        "family": "Butterfield",
+        "sequence": "additional"
+      },
+      {
+        "given": "Alan",
+        "family": "Buse",
+        "sequence": "additional"
+      },
+      {
+        "given": "John C.",
+        "family": "Coulson",
+        "sequence": "additional"
+      },
+      {
+        "given": "John",
+        "family": "Farrar",
+        "sequence": "additional"
+      },
+      {
+        "given": "John E. G.",
+        "family": "Good",
+        "sequence": "additional"
+      },
+      {
+        "given": "Richard",
+        "family": "Harrington",
+        "sequence": "additional"
+      },
+      {
+        "given": "Susane",
+        "family": "Hartley",
+        "sequence": "additional"
+      },
+      {
+        "given": "T. Hefin",
+        "family": "Jones",
+        "sequence": "additional"
+      },
+      {
+        "given": "Richard L.",
+        "family": "Lindroth",
+        "sequence": "additional"
+      },
+      {
+        "given": "Malcolm C.",
+        "family": "Press",
+        "sequence": "additional"
+      },
+      {
+        "given": "Ilias",
+        "family": "Symrnioudis",
+        "sequence": "additional"
+      },
+      {
+        "given": "Allan D.",
+        "family": "Watt",
+        "sequence": "additional"
+      },
+      {
+        "given": "John B.",
+        "family": "Whittaker",
+        "sequence": "additional"
+      }
+    ],
+    "year": 0,
+    "issued": {
+      "date-parts": [
+        [
+          2002,
+          1
+        ]
+      ]
+    },
+    "container-title": "Global Change Biology",
+    "short-container-title": "Global Change Biology",
+    "page": "1-16",
+    "volume": "8",
+    "url": "https://doi.org/10.1046/j.1365-2486.2002.00451.x",
+    "abstract": "\u003cjats:title\u003eAbstract\u003c/jats:title\u003e\u003cjats:p\u003eThis review examines the direct effects of climate change on insect herbivores. Temperature is identified as the dominant abiotic factor directly affecting herbivorous insects. There is little evidence of any direct effects of CO\u003cjats:sub\u003e2\u003c/jats:sub\u003e or UVB. Direct impacts of precipitation have been largely neglected in current research on climate change. Temperature directly affects development, survival, range and abundance. Species with a large geographical range will tend to be less affected. The main effect of temperature in temperate regions is to influence winter survival; at more northerly latitudes, higher temperatures extend the summer season, increasing the available thermal budget for growth and reproduction. Photoperiod is the dominant cue for the seasonal synchrony of temperate insects, but their thermal requirements may differ at different times of year. Interactions between photoperiod and temperature determine phenology; the two factors do not necessarily operate in tandem. Insect herbivores show a number of distinct life‐history strategies to exploit plants with different growth forms and strategies, which will be differentially affected by climate warming. There are still many challenges facing biologists in predicting and monitoring the impacts of climate change. Future research needs to consider insect herbivore phenotypic and genotypic flexibility, their responses to global change parameters operating in concert, and awareness that some patterns may only become apparent in the longer term.\u003c/jats:p\u003e"
+  },
   "10.1111/1365-2435.14441": {
     "type": "journal-article",
     "doi": "10.1111/1365-2435.14441",
