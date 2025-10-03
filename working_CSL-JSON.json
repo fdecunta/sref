@@ -1,0 +1,17 @@
+[
+  {
+    "id": "vanDam2009",
+    "type": "article-journal",
+    "title": "Belowground Herbivory and Plant Defenses",
+    "author": [
+      { "family": "van Dam", "given": "Nicole M." }
+    ],
+    "issued": { "date-parts": [[2009,12,1]] },
+    "container-title": "Annual Review of Ecology, Evolution, and Systematics",
+    "volume": "40",
+    "page": "373-391",
+    "DOI": "10.1146/annurev.ecolsys.110308.120314",
+    "URL": "https://www.annualreviews.org/doi/10.1146/annurev.ecolsys.110308.120314"
+  }
+]
+

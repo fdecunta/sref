@@ -17,40 +17,34 @@ type Person struct {
 }
 
 type Reference struct {
-    Type         string   `json:"type"`
-    DOI          string   `json:"doi"`
-    Title        string   `json:"title"`
-    Author       []Person `json:"author"`
-    Year         int      `json:"year"`
-    Journal      string   `json:"journal"`
-    JournalShort string   `json:"journal-short"`
-    Page         string   `json:"page"`
-    Volume       string   `json:"volume"`
-    URL          string   `json:"url"`
-    Abstract     string   `json:"abstract"`
+    Type                string      `json:"type"`
+    DOI                 string      `json:"doi"`
+    Title               string      `json:"title"`
+    Author              []*crossrefapi.Person `json:"author"`
+    Issued              *crossrefapi.DateObject `json:"issued"`
+    ContainerTitle      string      `json:"container-title"`
+    ShortContainerTitle string      `json:"short-container-title"`
+    Page                string      `json:"page"`
+    Volume              string      `json:"volume"`
+    URL                 string      `json:"url"`
+    Abstract            string      `json:"abstract"`
 }
 
 
 func BuildReference(msg *crossrefapi.Message) *Reference {
-    var authorsList []Person
-    for _, a := range msg.Author {
-        authorsList = append(authorsList, Person{a.Given, a.Family})
-    }
-
     r := Reference{
         Type: msg.Type,
         DOI: msg.DOI,
         Title: strings.Join(msg.Title, " "),
-        Author: authorsList,
-        Year: msg.Issued.DateParts[0][0],
-        Journal: strings.Join(msg.ContainerTitle, " "),
-        JournalShort: strings.Join(msg.ShortContainerTitle, " "),
+        Author: msg.Author,
+        Issued: msg.Issued,
+        ContainerTitle: strings.Join(msg.ContainerTitle, " "),
+        ShortContainerTitle: strings.Join(msg.ShortContainerTitle, " "),
         Page: msg.Page,
         Volume: msg.Volume,
         URL: msg.URL,
         Abstract: msg.Abstract,
     }
-
     return &r
 }
 

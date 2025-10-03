@@ -1,33 +1,62 @@
 {
-  "10.1073/pnas.1116437108": {
+  "10.1111/1365-2435.14441": {
     "type": "journal-article",
-    "doi": "10.1073/pnas.1116437108",
-    "title": "Global food demand and the sustainable intensification of agriculture",
+    "doi": "10.1111/1365-2435.14441",
+    "title": "Plant neighbourhood diversity effects on leaf traits: A meta‐analysis",
     "author": [
       {
-        "given": "David",
-        "family": "Tilman"
+        "ORCID": "https://orcid.org/0000-0002-7887-5419",
+        "given": "Juri A.",
+        "family": "Felix",
+        "affiliation": [
+          {
+            "name": "Department of Biological Sciences Royal Holloway University of London  Egham UK"
+          },
+          {
+            "name": "Royal Botanic Gardens  Kew UK"
+          }
+        ],
+        "sequence": "first"
       },
       {
-        "given": "Christian",
-        "family": "Balzer"
+        "ORCID": "https://orcid.org/0000-0002-0736-3619",
+        "given": "Philip C.",
+        "family": "Stevenson",
+        "affiliation": [
+          {
+            "name": "Royal Botanic Gardens  Kew UK"
+          }
+        ],
+        "sequence": "additional"
       },
       {
-        "given": "Jason",
-        "family": "Hill"
-      },
-      {
-        "given": "Belinda L.",
-        "family": "Befort"
+        "ORCID": "https://orcid.org/0000-0002-9033-0171",
+        "given": "Julia",
+        "family": "Koricheva",
+        "affiliation": [
+          {
+            "name": "Department of Biological Sciences Royal Holloway University of London  Egham UK"
+          }
+        ],
+        "sequence": "additional"
       }
     ],
-    "year": 2011,
-    "journal": "Proceedings of the National Academy of Sciences",
-    "journal-short": "Proc. Natl. Acad. Sci. U.S.A.",
-    "page": "20260-20264",
-    "volume": "108",
-    "url": "https://doi.org/10.1073/pnas.1116437108",
-    "abstract": "\u003cjats:p\u003eGlobal food demand is increasing rapidly, as are the environmental impacts of agricultural expansion. Here, we project global demand for crop production in 2050 and evaluate the environmental impacts of alternative ways that this demand might be met. We find that per capita demand for crops, when measured as caloric or protein content of all crops combined, has been a similarly increasing function of per capita real income since 1960. This relationship forecasts a 100–110% increase in global crop demand from 2005 to 2050. Quantitative assessments show that the environmental impacts of meeting this demand depend on how global agriculture expands. If current trends of greater agricultural intensification in richer nations and greater land clearing (extensification) in poorer nations were to continue, ∼1 billion ha of land would be cleared globally by 2050, with CO\u003cjats:sub\u003e2\u003c/jats:sub\u003e-C equivalent greenhouse gas emissions reaching ∼3 Gt y\u003cjats:sup\u003e−1\u003c/jats:sup\u003eand N use ∼250 Mt y\u003cjats:sup\u003e−1\u003c/jats:sup\u003eby then. In contrast, if 2050 crop demand was met by moderate intensification focused on existing croplands of underyielding nations, adaptation and transfer of high-yielding technologies to these croplands, and global technological improvements, our analyses forecast land clearing of only ∼0.2 billion ha, greenhouse gas emissions of ∼1 Gt y\u003cjats:sup\u003e−1\u003c/jats:sup\u003e, and global N use of ∼225 Mt y\u003cjats:sup\u003e−1\u003c/jats:sup\u003e. Efficient management practices could substantially lower nitrogen use. Attainment of high yields on existing croplands of underyielding nations is of great importance if global crop demand is to be met with minimal environmental impacts.\u003c/jats:p\u003e"
+    "year": 0,
+    "issued": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          29
+        ]
+      ]
+    },
+    "container-title": "Functional Ecology",
+    "short-container-title": "Functional Ecology",
+    "page": "3150-3163",
+    "volume": "37",
+    "url": "https://doi.org/10.1111/1365-2435.14441",
+    "abstract": "\u003cjats:title\u003eAbstract\u003c/jats:title\u003e\u003cjats:p\u003e\n\u003cjats:list\u003e\n\n\u003cjats:list-item\u003e\u003cjats:p\u003eLeaf traits often vary with plant neighbourhood composition, which in turn may mediate plant susceptibility to herbivory. However, it is unknown whether there are any common patterns of change in leaf trait expression in response to neighbourhood diversity, and whether these responses confer increased resistance or susceptibility to herbivores.\u003c/jats:p\u003e\u003c/jats:list-item\u003e\n\n\u003cjats:list-item\u003e\u003cjats:p\u003eWe used meta‐analysis to combine data from 43 studies that examined the influence of neighbourhood diversity on eight physical and chemical leaf traits that could affect herbivory. All leaf traits apart from leaf thickness were highly plastic and exhibited significant differences between plant monocultures and species mixtures, but the direction of effect was variable. Leaf toughness was the only trait that displayed a significant decrease with plant diversity, whereas specific leaf area (SLA) and leaf nitrogen were both marginally increased in species mixtures.\u003c/jats:p\u003e\u003c/jats:list-item\u003e\n\n\u003cjats:list-item\u003e\u003cjats:p\u003eThe magnitude and direction of leaf trait responses to neighbourhood diversity were independent of plant density and phylogenetic diversity, but changes in SLA correlated positively with plant species richness. SLA was also significantly increased in experimental studies, but not in observational studies, while neighbourhoods containing nitrogen‐fixers were associated with increased leaf nitrogen and reduced phenolics. When studies on the over‐represented species \u003cjats:italic\u003eBetula pendula\u003c/jats:italic\u003e were removed from the analysis, the effect of neighbourhood diversity on leaf toughness became nonsignificant, but phenolics were significantly reduced in diverse neighbourhoods composed of mature trees, and marginally reduced in species mixtures across all studies.\u003c/jats:p\u003e\u003c/jats:list-item\u003e\n\n\u003cjats:list-item\u003e\u003cjats:p\u003eIncreases in plant neighbourhood diversity are often associated with reductions of herbivory, although in some cases, the reverse occurs, and plants growing in species mixtures are found to suffer greater herbivory than those in monocultures. This study offers a potential explanation for the latter phenomenon, as our results show that leaf trait expression is highly plastic in response to neighbourhood diversity, and in certain cases could lead to increased leaf quality, which in turn could promote greater rates of herbivory.\u003c/jats:p\u003e\u003c/jats:list-item\u003e\n\u003c/jats:list\u003e\n\u003c/jats:p\u003e\u003cjats:p\u003eRead the free \u003cjats:ext-link xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"https://fesummaries.wordpress.com/2023/10/03/does-trait-variation-cause-a-reduction-of-leaf-quality-for-plants-growing-in-species-mixtures/\"\u003ePlain Language Summary\u003c/jats:ext-link\u003e for this article on the Journal blog.\u003c/jats:p\u003e"
   },
   "10.1111/j.1469-185X.2007.00027.x": {
     "type": "journal-article",
@@ -36,45 +65,109 @@
     "author": [
       {
         "given": "Shinichi",
-        "family": "Nakagawa"
+        "family": "Nakagawa",
+        "sequence": "first"
       },
       {
         "given": "Innes C.",
-        "family": "Cuthill"
+        "family": "Cuthill",
+        "sequence": "additional"
       }
     ],
-    "year": 2007,
-    "journal": "Biological Reviews",
-    "journal-short": "Biological Reviews",
+    "year": 0,
+    "issued": {
+      "date-parts": [
+        [
+          2007,
+          10,
+          18
+        ]
+      ]
+    },
+    "container-title": "Biological Reviews",
+    "short-container-title": "Biological Reviews",
     "page": "591-605",
     "volume": "82",
     "url": "https://doi.org/10.1111/j.1469-185x.2007.00027.x",
     "abstract": "\u003cjats:title\u003eAbstract\u003c/jats:title\u003e\u003cjats:p\u003eNull hypothesis significance testing (NHST) is the dominant statistical approach in biology, although it has many, frequently unappreciated, problems. Most importantly, NHST does not provide us with two crucial pieces of information: (1) the magnitude of an effect of interest, and (2) the precision of the estimate of the magnitude of that effect. All biologists should be ultimately interested in biological importance, which may be assessed using the magnitude of an effect, but not its statistical significance. Therefore, we advocate presentation of measures of the magnitude of effects (i.e. effect size statistics) and their confidence intervals (CIs) in all biological journals. Combined use of an effect size and its CIs enables one to assess the relationships within data more effectively than the use of\u003cjats:italic\u003ep\u003c/jats:italic\u003evalues, regardless of statistical significance. In addition, routine presentation of effect sizes will encourage researchers to view their results in the context of previous research and facilitate the incorporation of results into future meta‐analysis, which has been increasingly used as the standard method of quantitative review in biology. In this article, we extensively discuss two dimensionless (and thus standardised) classes of effect size statistics:\u003cjats:italic\u003ed\u003c/jats:italic\u003estatistics (standardised mean difference) and\u003cjats:italic\u003er\u003c/jats:italic\u003estatistics (correlation coefficient), because these can be calculated from almost all study designs and also because their calculations are essential for meta‐analysis. However, our focus on these standardised effect size statistics does not mean unstandardised effect size statistics (e.g. mean difference and regression coefficient) are less important. We provide potential solutions for four main technical problems researchers may encounter when calculating effect size and CIs: (1) when covariates exist, (2) when bias in estimating effect size is possible, (3) when data have non‐normal error structure and/or variances, and (4) when data are non‐independent. Although interpretations of effect sizes are often difficult, we provide some pointers to help researchers. This paper serves both as a beginner’s instruction manual and a stimulus for changing statistical practice for the better in the biological sciences.\u003c/jats:p\u003e"
   },
-  "10.3389/fmicb.2023.1146061": {
+  "10.1111/nph.14475": {
     "type": "journal-article",
-    "doi": "10.3389/fmicb.2023.1146061",
-    "title": "The fungus Clonostachys epichloë alters the influence of the Epichloë endophyte on seed germination and the biomass of Puccinellia distans grass",
+    "doi": "10.1111/nph.14475",
+    "title": "Herbivore‐induced plant volatiles and tritrophic interactions across spatial scales",
     "author": [
       {
-        "given": "Karolina",
-        "family": "Górzyńska"
+        "given": "Yavanna",
+        "family": "Aartsma",
+        "affiliation": [
+          {
+            "name": "Farming Systems Ecology Wageningen University PO Box 430 Wageningen 6700 AK the Netherlands"
+          },
+          {
+            "name": "Laboratory of Entomology Wageningen University PO Box 16 Wageningen 6700 AA the Netherlands"
+          },
+          {
+            "name": "Centre for Crop Systems Analysis Wageningen University PO Box 430 Wageningen 6700 AK the Netherlands"
+          }
+        ],
+        "sequence": "first"
       },
       {
-        "given": "Paweł",
-        "family": "Olejniczak"
+        "given": "Felix J. J. A.",
+        "family": "Bianchi",
+        "affiliation": [
+          {
+            "name": "Farming Systems Ecology Wageningen University PO Box 430 Wageningen 6700 AK the Netherlands"
+          }
+        ],
+        "sequence": "additional"
       },
       {
-        "given": "Ewa",
-        "family": "Węgrzyn"
+        "given": "Wopke",
+        "family": "van der Werf",
+        "affiliation": [
+          {
+            "name": "Centre for Crop Systems Analysis Wageningen University PO Box 430 Wageningen 6700 AK the Netherlands"
+          }
+        ],
+        "sequence": "additional"
+      },
+      {
+        "given": "Erik H.",
+        "family": "Poelman",
+        "affiliation": [
+          {
+            "name": "Laboratory of Entomology Wageningen University PO Box 16 Wageningen 6700 AA the Netherlands"
+          }
+        ],
+        "sequence": "additional"
+      },
+      {
+        "given": "Marcel",
+        "family": "Dicke",
+        "affiliation": [
+          {
+            "name": "Laboratory of Entomology Wageningen University PO Box 16 Wageningen 6700 AA the Netherlands"
+          }
+        ],
+        "sequence": "additional"
       }
     ],
-    "year": 2023,
-    "journal": "Frontiers in Microbiology",
-    "journal-short": "Front. Microbiol.",
-    "page": "",
-    "volume": "14",
-    "url": "https://doi.org/10.3389/fmicb.2023.1146061",
-    "abstract": "\u003cjats:p\u003eThe fungal grass endophyte \u003cjats:italic\u003eEpichloë typhina\u003c/jats:italic\u003e (Pers.) Tul. \u0026amp;amp; C. Tul. (Ascomycota: Clavicipitaceae) grows intercellulary in aerial plant parts and reproduces asexually by invading host seeds. In this phase, it enhances seed production and germination, which accelerates its vertical spread. This relationship may be distorted by other seed-born fungi, whose spread is not so directly dependent on the success of the grass. Recently, the fungus \u003cjats:italic\u003eClonostachys epichloë\u003c/jats:italic\u003e Schroers has been observed on \u003cjats:italic\u003ePuccinellia distans\u003c/jats:italic\u003e (Jacq.) Parl seeds originating from grass clumps infested with stromata, sexual structures of \u003cjats:italic\u003eEpichloë typhina\u003c/jats:italic\u003e that are formed in spring on some host culms, preventing flower and seed development (‘choke disease’). \u003cjats:italic\u003eC. epichloë\u003c/jats:italic\u003e shows mycoparasitic activity toward \u003cjats:italic\u003eEpichloë\u003c/jats:italic\u003e stromata by reducing the production of ascospores, which are responsible for horizontal transmission of the fungus. The aim of this study was to investigate the effect of seed-borne \u003cjats:italic\u003eC. epichloë\u003c/jats:italic\u003e on seed germination, as well as the size and weight of \u003cjats:italic\u003eP. distans\u003c/jats:italic\u003e seedlings and to examine whether \u003cjats:italic\u003eC. epichloë\u003c/jats:italic\u003e alters the influence of \u003cjats:italic\u003eEpichloë\u003c/jats:italic\u003e in the early developmental stages of \u003cjats:italic\u003eP. distans\u003c/jats:italic\u003e. The results showed that if \u003cjats:italic\u003eC. epichloë\u003c/jats:italic\u003e acts on seeds together with \u003cjats:italic\u003eE. typhina\u003c/jats:italic\u003e endophytes, the seeds were negatively affected due to the elimination of the positive effect of the latter in terms of both seed germination rate and seedling length. At the same time, \u003cjats:italic\u003eC. epichloë\u003c/jats:italic\u003e increased the proportion of \u003cjats:italic\u003eE. typhina\u003c/jats:italic\u003e-untreated germinated seeds. Additionally, only the joint action of the two fungi, \u003cjats:italic\u003eE. typhina\u003c/jats:italic\u003e and \u003cjats:italic\u003eC. epichloë,\u003c/jats:italic\u003e effectively stimulated seedling dry mass; the presence of \u003cjats:italic\u003eE. typhina\u003c/jats:italic\u003e alone was not sufficient to noticeably affect seedling size. Based on the increasing commonality of \u003cjats:italic\u003eC. epichloë\u003c/jats:italic\u003e on \u003cjats:italic\u003eEpichloë\u003c/jats:italic\u003e stromata, as well as its potential to be used in biocontrol of ‘choke disease’, we should take a closer look at this fungus, not only in terms of its mycoparasitic ability, but also in terms of its cumulative impact on the whole \u003cjats:italic\u003eEpichloë-\u003c/jats:italic\u003egrass system.\u003c/jats:p\u003e"
+    "year": 0,
+    "issued": {
+      "date-parts": [
+        [
+          2017,
+          2,
+          14
+        ]
+      ]
+    },
+    "container-title": "New Phytologist",
+    "short-container-title": "New Phytologist",
+    "page": "1054-1063",
+    "volume": "216",
+    "url": "https://doi.org/10.1111/nph.14475",
+    "abstract": "\u003cjats:title\u003eSummary\u003c/jats:title\u003e\u003cjats:p\u003eHerbivore‐induced plant volatiles (HIPVs) are an important cue used in herbivore location by carnivorous arthropods such as parasitoids. The effects of plant volatiles on parasitoids have been well characterised at small spatial scales, but little research has been done on their effects at larger spatial scales. The spatial matrix of volatiles (‘volatile mosaic’) within which parasitoids locate their hosts is dynamic and heterogeneous. It is shaped by the spatial pattern of HIPV‐emitting plants, the concentration, chemical composition and breakdown of the emitted HIPV blends, and by environmental factors such as wind, turbulence and vegetation that affect transport and mixing of odour plumes. The volatile mosaic may be exploited differentially by different parasitoid species, in relation to species traits such as sensory ability to perceive volatiles and the physical ability to move towards the source. Understanding how HIPVs influence parasitoids at larger spatial scales is crucial for our understanding of tritrophic interactions and sustainable pest management in agriculture. However, there is a large gap in our knowledge on how volatiles influence the process of host location by parasitoids at the landscape scale. Future studies should bridge the gap between the chemical and behavioural ecology of tritrophic interactions and landscape ecology.\u003c/jats:p\u003e"
   }
 }

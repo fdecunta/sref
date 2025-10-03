@@ -1,0 +1,1 @@
+pandoc cool_paper.md --citeproc --bibliography=cool_ref.json --csl=apa.csl -o cool.docx

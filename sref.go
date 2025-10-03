@@ -73,7 +73,11 @@ func main() {
            fmt.Println("DOI not found")
            return
         }
-        fmt.Println(*r)
+        jsonBytes, err := json.MarshalIndent(*r, "", "  ")
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(string(jsonBytes))         
     } else if add {
         if r != nil {
             fmt.Println("DOI already exists")
