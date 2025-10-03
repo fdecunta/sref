@@ -69,11 +69,11 @@ func SearchDoi(doi string) (*Reference, error) {
 }
 
 
-func SearchTitle(title string) *Reference {
+func SearchTitle(title string) (*Reference, error) {
     // TODO: don't hardcode the email
     client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
     if err != nil {
-        return nil
+        return nil, err
     }
 
     query := crossrefapi.WorksQuery{
@@ -83,20 +83,24 @@ func SearchTitle(title string) *Reference {
     }
     works, err := client.QueryWorks(query)
    
-    if err != nil || works == nil || works.Status != "ok" {
-        return nil
+    if err != nil {
+        return nil, err
+    }
+
+    if works.Status != "ok" {
+        return nil, errors.New("can't reach CrossrefAPI. Status not ok")
     }
     if len(works.Message.Items) == 0 {
-        return nil
+        return nil, errors.New("no results for title")
     }
 
-    return BuildReference(&works.Message.Items[0])
+    return BuildReference(&works.Message.Items[0]), nil
 }
 
-func (r *Reference) ToJson() string {
+func (r *Reference) ToJson() (string, error) {
     jsonBytes, err := json.MarshalIndent(*r, "", "  ")
     if err != nil {
-        panic(err)
+        return "", err
     }
-    return string(jsonBytes)
+    return string(jsonBytes), nil
 }

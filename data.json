@@ -1,4 +1,40 @@
 {
+  "10.1016/j.baae.2021.12.002": {
+    "type": "journal-article",
+    "doi": "10.1016/j.baae.2021.12.002",
+    "title": "Resistance of plant communities to invasion by tall fescue: An experimental study combining species diversity, functional traits and nutrient levels",
+    "author": [
+      {
+        "given": "Shinyeong",
+        "family": "Park",
+        "sequence": "first"
+      },
+      {
+        "given": "Jae Hyun",
+        "family": "Kim",
+        "sequence": "additional"
+      },
+      {
+        "given": "Eun Ju",
+        "family": "Lee",
+        "sequence": "additional"
+      }
+    ],
+    "issued": {
+      "date-parts": [
+        [
+          2022,
+          2
+        ]
+      ]
+    },
+    "container-title": "Basic and Applied Ecology",
+    "short-container-title": "Basic and Applied Ecology",
+    "page": "39-49",
+    "volume": "58",
+    "url": "https://doi.org/10.1016/j.baae.2021.12.002",
+    "abstract": ""
+  },
   "10.1046/j.1365-2486.2002.00451.x": {
     "type": "journal-article",
     "doi": "10.1046/j.1365-2486.2002.00451.x",
@@ -100,7 +136,6 @@
         "sequence": "additional"
       }
     ],
-    "year": 0,
     "issued": {
       "date-parts": [
         [
@@ -158,7 +193,6 @@
         "sequence": "additional"
       }
     ],
-    "year": 0,
     "issued": {
       "date-parts": [
         [
@@ -191,7 +225,6 @@
         "sequence": "additional"
       }
     ],
-    "year": 0,
     "issued": {
       "date-parts": [
         [
@@ -270,7 +303,6 @@
         "sequence": "additional"
       }
     ],
-    "year": 0,
     "issued": {
       "date-parts": [
         [

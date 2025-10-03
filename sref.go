@@ -63,23 +63,29 @@ func main() {
 
     r := d.Get(doi)
 
-    if read {
-        if r == nil {
-           fmt.Println("DOI not found")
-           return
-        }
-        fmt.Println(r.ToJson())
-    } else if add {
+    if add {
         err := Add(d, r, doi)
         if err != nil {
             fmt.Println("Failed to store reference: %s\n", err)
+            os.Exit(1)
         }
+        return
+    }
 
-    } else if del {
-        if r == nil {
-            fmt.Println("DOI not found")
-            return
+    // Next operations need r to exist:
+    if r == nil {
+       fmt.Println("ERROR: DOI not found")
+       os.Exit(1)
+    }
+
+    if read {
+        s, err := r.ToJson()
+        if err != nil {
+            fmt.Println("error: can't read reference \n%s\n", err)
+            os.Exit(1)
         }
+        fmt.Println(s)
+    } else if del {
         err := d.Delete(doi)
         if err != nil {
             fmt.Fprintf(os.Stderr, "Failed fo delete DOI: %s\n", err)
@@ -171,30 +177,36 @@ func assertDoi(s string) (string, error) {
         return "", errors.New("empty input")
     }
 
+    // Try to capture DOI
     doi, ok := CaptureDoi(s)
-    if !ok {
-        r, err := SearchByTitle(s)
-        if err != nil {
-            return "", err
-        }
-        doi = r.DOI
+    if ok {
+        return doi, nil
     }
 
-    return doi, nil
+    // If not a DOI, use it as a title and search for it in the database
+    if r := QueryTitle(s); r != nil {
+        return r.DOI, nil
+    }
+
+    // Fallback to title search in CrossRef
+    r, err := crossref.SearchTitle(s)
+    if err != nil {
+        return "", nil
+    }
+    if r == nil {
+        return "", errors.New("DOI not found")
+    }
+    return r.DOI, nil
 }
 
 
-func SearchByTitle(title string) (*crossref.Reference, error) {
+func QueryTitle(title string) (*crossref.Reference) {
     for _, i := range d.Table {
         if strings.Contains(strings.ToLower(i.Title), strings.ToLower(title)) {
             ref := d.Table[i.DOI]
-            return &ref, nil
+            return &ref
         }
     }
-
-    r := crossref.SearchTitle(title)
-    if r == nil {
-        log.Fatal("Can't find this title")
-    }
-    return r, nil
+    
+    return nil
 }
