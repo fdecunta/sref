@@ -1,13 +1,14 @@
 package crossref
 
 import (
-    "log"
+    "encoding/json"
+    "errors"
     "strings"
 
     "github.com/caltechlibrary/crossrefapi"
 )
 
-// TODO: Add support for books!
+// TODO: Just use Message class from crossrefapi
 
 // See the structure of Message here: https://github.com/caltechlibrary/crossrefapi/blob/main/works.go
 
@@ -49,24 +50,22 @@ func BuildReference(msg *crossrefapi.Message) *Reference {
 }
 
 
-func SearchDoi(doi string) *Reference {
+func SearchDoi(doi string) (*Reference, error) {
     // TODO: don't hardcode the email
     client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
     if err != nil {
-        log.Fatal(err)
+        return nil, err
     }
+
     works, err := client.Works(doi)
-   
     if err != nil {
-        log.Fatal(err)
+        return nil, err
     }
     if works.Status != "ok" {
-        log.Fatal("request is not ok")
+        return nil, errors.New("request is not ok")
     }
     
-    msg := works.Message 
-
-    return BuildReference(msg)
+    return BuildReference(works.Message), nil
 }
 
 
@@ -91,7 +90,13 @@ func SearchTitle(title string) *Reference {
         return nil
     }
 
-    msg := works.Message.Items[0] 
+    return BuildReference(&works.Message.Items[0])
+}
 
-    return BuildReference(&msg)
+func (r *Reference) ToJson() string {
+    jsonBytes, err := json.MarshalIndent(*r, "", "  ")
+    if err != nil {
+        panic(err)
+    }
+    return string(jsonBytes)
 }

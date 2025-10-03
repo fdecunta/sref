@@ -1,7 +1,6 @@
 package main
 
 import (
-    "encoding/json"
     "errors"
     "log"
     "flag"
@@ -15,18 +14,18 @@ import (
     "sref/db"
 )
 
-var file string
-var input string
-var doi string
-var add bool
-var del bool
-var read bool
-var edit bool
-var toJson bool
-
 var d *db.DataBase
 
 func main() {
+    var file string
+    var input string
+    var doi string
+    var add bool
+    var del bool
+    var read bool
+//    var edit bool
+    var toJson bool
+
     flag.StringVar(&file, "file", "", "Path to the JSON database file")
     flag.StringVar(&input, "input", "", "Input value to use. Can be a DOI or the paper's title")
     flag.BoolVar(&add, "a", false, "Add reference to the database")
@@ -50,16 +49,12 @@ func main() {
 
     if toJson {
         for _, i := range d.Table {
-            jsonBytes, err := json.MarshalIndent(i, "", "  ")
-            if err != nil {
-                panic(err)
-            }
-            fmt.Println(string(jsonBytes))         
+            fmt.Println(i.ToJson())
         }
         return
     }
 
-    doi, err := assertDoi(input)
+    doi, err = assertDoi(input)
     if err != nil {
         fmt.Println(err)
         flag.Usage()
@@ -73,21 +68,13 @@ func main() {
            fmt.Println("DOI not found")
            return
         }
-        jsonBytes, err := json.MarshalIndent(*r, "", "  ")
-        if err != nil {
-            panic(err)
-        }
-        fmt.Println(string(jsonBytes))         
+        fmt.Println(r.ToJson())
     } else if add {
-        if r != nil {
-            fmt.Println("DOI already exists")
-            return
-        }
-        err := d.Set(doi, crossref.SearchDoi(doi))
+        err := Add(d, r, doi)
         if err != nil {
-            fmt.Fprintf(os.Stderr, "Failed fo store reference: %s\n", err)
-            os.Exit(1)
+            fmt.Println("Failed to store reference: %s\n", err)
         }
+
     } else if del {
         if r == nil {
             fmt.Println("DOI not found")
@@ -99,6 +86,26 @@ func main() {
             os.Exit(1)
         }
     } 
+}
+
+
+func Add(d *db.DataBase, r *crossref.Reference, doi string) error {
+    if r != nil {
+        fmt.Println("DOI already exists")
+        return nil
+    }
+
+    r, err := crossref.SearchDoi(doi)
+    if err != nil {       
+        return err
+    }
+    
+    err = d.Set(doi, r)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
 
 
@@ -166,7 +173,7 @@ func assertDoi(s string) (string, error) {
 
     doi, ok := CaptureDoi(s)
     if !ok {
-        r, err := SearchByTitle(input)
+        r, err := SearchByTitle(s)
         if err != nil {
             return "", err
         }
@@ -191,4 +198,3 @@ func SearchByTitle(title string) (*crossref.Reference, error) {
     }
     return r, nil
 }
- 
