@@ -18,6 +18,7 @@ type Person struct {
 }
 
 type Reference struct {
+    ID                  string      `json:"id"`
     Type                string      `json:"type"`
     DOI                 string      `json:"doi"`
     Title               string      `json:"title"`
@@ -34,6 +35,7 @@ type Reference struct {
 
 func BuildReference(msg *crossrefapi.Message) *Reference {
     r := Reference{
+        ID: "",
         Type: msg.Type,
         DOI: msg.DOI,
         Title: strings.Join(msg.Title, " "),

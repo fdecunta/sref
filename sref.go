@@ -18,15 +18,16 @@ var d *db.DataBase
 
 func main() {
     var file string
-    var input string
-    var doi string
+    var doi, title, id string
     var add bool
     var del bool
     var read bool
     var toJson bool
 
     flag.StringVar(&file, "file", "", "Path to the JSON database file")
-    flag.StringVar(&input, "input", "", "Input value to use. Can be a DOI or the paper's title")
+    flag.StringVar(&doi, "doi", "", "Paper DOI")
+    flag.StringVar(&title, "title", "", "Paper title")
+    flag.StringVar(&id, "id", "", "Paper id")
     flag.BoolVar(&add, "a", false, "Add reference to the database")
     flag.BoolVar(&del, "d", false, "Delete reference from the database")
     flag.BoolVar(&read, "r", false, "Read reference from the database")
@@ -53,27 +54,58 @@ func main() {
         return
     }
 
-    doi, err = assertDoi(input)
-    if err != nil {
-        fmt.Println(err)
-        flag.Usage()
-        os.Exit(1)
-    }
 
-    r := d.Get(doi)
+    // Accept the input variable and check if already exists
+    var r *crossref.Reference
+    if doi != "" {
+        doi, err = assertDoi(doi, d)
+        if err != nil {
+            fmt.Println(err)
+            flag.Usage()
+            os.Exit(1)
+        }
+        r = d.Get(doi)
+    } else if title != "" {
+        r = d.QueryTitle(title)
+    } else if id != "" {
+        r = d.QueryId(id)
+
+    } 
+
 
     if add {
-        err := Add(d, r, doi)
+        if r != nil {
+            fmt.Println("Reference already exists")
+            return 
+        }
+
+        if doi != "" {
+            r, err = crossref.SearchDoi(doi)
+        } else if title != "" {
+            r, err = crossref.SearchTitle(title)
+        } else {
+            fmt.Println("No input provided")
+            os.Exit(1)
+        }
+
         if err != nil {
             fmt.Println("Failed to store reference: %s\n", err)
             os.Exit(1)
         }
+
+        err = d.Store(r)
+        if err != nil {
+            fmt.Println("Failed to store reference: %s\n", err)
+        }
+    
+        fmt.Printf("Added %s\n", r.ID)
         return
     }
 
+
     // Next operations need r to exist:
     if r == nil {
-       fmt.Println("ERROR: DOI not found")
+       fmt.Println("ERROR: reference not found")
        os.Exit(1)
     }
 
@@ -91,26 +123,6 @@ func main() {
             os.Exit(1)
         }
     } 
-}
-
-
-func Add(d *db.DataBase, r *crossref.Reference, doi string) error {
-    if r != nil {
-        fmt.Println("DOI already exists")
-        return nil
-    }
-
-    r, err := crossref.SearchDoi(doi)
-    if err != nil {       
-        return err
-    }
-    
-    err = d.Set(doi, r)
-    if err != nil {
-        return err
-    }
-
-    return nil
 }
 
 
@@ -170,41 +182,13 @@ func CaptureDoi(s string) (string, bool) {
 }
 
 
-func assertDoi(s string) (string, error) {
+func assertDoi(s string, d *db.DataBase) (string, error) {
     s = strings.TrimSpace(s)
-    if len(s) == 0 {
-        return "", errors.New("empty input")
-    }
 
-    // Try to capture DOI
     doi, ok := CaptureDoi(s)
-    if ok {
-        return doi, nil
-    }
+    if !ok {
+        return "", errors.New("Not a valid DOI")
+    } 
 
-    // If not a DOI, use it as a title and search for it in the database
-    if r := QueryTitle(s); r != nil {
-        return r.DOI, nil
-    }
-
-    // Fallback to title search in CrossRef
-    r, err := crossref.SearchTitle(s)
-    if err != nil {
-        return "", nil
-    }
-    if r == nil {
-        return "", errors.New("DOI not found")
-    }
-    return r.DOI, nil
-}
-
-
-func QueryTitle(title string) (*crossref.Reference) {
-    for _, i := range d.Table {
-        if strings.Contains(strings.ToLower(i.Title), strings.ToLower(title)) {
-            ref := d.Table[i.DOI]
-            return &ref
-        }
-    }
-    return nil
+    return doi, nil
 }
