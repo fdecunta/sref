@@ -3,6 +3,7 @@ package crossref
 import (
     "encoding/json"
     "errors"
+    "fmt"
     "strings"
 
     "github.com/caltechlibrary/crossrefapi"
@@ -105,4 +106,26 @@ func (r *Reference) ToJson() (string, error) {
         return "", err
     }
     return string(jsonBytes), nil
+}
+
+
+func (r *Reference) ToBibTeX() string {
+    var authors string
+    for i, a := range r.Author {
+        if i > 0 {
+            authors += " and "
+        }
+        authors += fmt.Sprintf("%s, %s", a.Family, a.Given)
+    }
+    
+    return fmt.Sprintf(`@article{%s,
+  author = {%s},
+  title = {%s},
+  journal = {%s},
+  year = {%d},
+  volume = {%s},
+  pages = {%s},
+  doi = {%s}
+}`, r.ID, authors, r.Title, r.ContainerTitle, 
+     r.Issued.DateParts[0][0], r.Volume, r.Page, r.DOI)
 }

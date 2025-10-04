@@ -18,7 +18,7 @@ var d *db.DataBase
 func main() {
     var file string
     var doi, title, id string
-    var add, read, del, toJson bool
+    var add, read, del, toJson, toBib bool
 
     flag.StringVar(&file, "file", "", "Path to the JSON database file")
     flag.StringVar(&doi, "doi", "", "Paper DOI")
@@ -28,6 +28,7 @@ func main() {
     flag.BoolVar(&read, "r", false, "Read reference from the database")
     flag.BoolVar(&del, "d", false, "Delete reference from the database")
     flag.BoolVar(&toJson, "json", false, "Print reference(s) in JSON format")
+    flag.BoolVar(&toBib, "bib", false, "Print reference(s) in BibTeX format")
 
     flag.Parse()
 
@@ -45,7 +46,7 @@ func main() {
     }
 
 
-    if !add && !del && !read && !toJson {
+    if !add && !del && !read && !toJson && !toBib {
         flag.Usage()
         os.Exit(1)
     }
@@ -62,6 +63,14 @@ func main() {
                 fmt.Println("can't format json")
             }
             fmt.Println(s)
+        }
+        return
+    }
+
+
+    if toBib {
+        for _, i := range d.Table {
+           fmt.Println(i.ToBibTeX())
         }
         return
     }
