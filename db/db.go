@@ -55,15 +55,6 @@ func (db *DataBase) Write() error {
 }
 
 
-func (db *DataBase) Get(doi string) *crossref.Reference {
-    r, ok := db.Table[doi]
-    if !ok {
-        return nil
-    } 
-    return &r
-}
-
-
 func (db *DataBase) Store(r *crossref.Reference) error {
     id := db.assignId(r)
     if id == "" {

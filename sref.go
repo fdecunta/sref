@@ -2,7 +2,6 @@ package main
 
 import (
     "errors"
-    "log"
     "flag"
     "fmt"
     "os"
@@ -19,10 +18,7 @@ var d *db.DataBase
 func main() {
     var file string
     var doi, title, id string
-    var add bool
-    var del bool
-    var read bool
-    var toJson bool
+    var add, del, read, toJson bool
 
     flag.StringVar(&file, "file", "", "Path to the JSON database file")
     flag.StringVar(&doi, "doi", "", "Paper DOI")
@@ -44,16 +40,25 @@ func main() {
 
     d, err = db.Open(file)
     if err != nil {
-        log.Fatal(err)
+        fmt.Fprintln(os.Stderr, "error:", err)
+        os.Exit(1)
     }
 
     if toJson {
         for _, i := range d.Table {
-            fmt.Println(i.ToJson())
+            s, err := i.ToJson()
+            if err != nil {
+                fmt.Println("can't format json")
+            }
+            fmt.Println(s)
         }
         return
     }
 
+    if !add && !del && !read {
+        flag.Usage()
+        os.Exit(1)
+    }
 
     // Accept the input variable and check if already exists
     var r *crossref.Reference
@@ -61,15 +66,18 @@ func main() {
         doi, err = assertDoi(doi, d)
         if err != nil {
             fmt.Println(err)
-            flag.Usage()
             os.Exit(1)
         }
-        r = d.Get(doi)
+        ref, ok := d.Table[doi]
+        if ok {
+            r = &ref
+        } else {
+            r = nil
+        }
     } else if title != "" {
         r = d.QueryTitle(title)
     } else if id != "" {
         r = d.QueryId(id)
-
     } 
 
 

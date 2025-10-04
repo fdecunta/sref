@@ -1,7 +1,11 @@
+install: sref.go
+	go build sref.go
+	sudo mv sref /usr/local/bin
+
+uninstall:
+	sudo rm /usr/local/bin/sref
+
 build: sref.go
 	go build sref.go
 
-run:
-	./sref -a "10.1111/j.1461-0248.2008.01192.x"
-
-.PHONY: build run
+.PHONY: install uninstall build
