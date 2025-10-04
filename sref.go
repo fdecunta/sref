@@ -18,15 +18,15 @@ var d *db.DataBase
 func main() {
     var file string
     var doi, title, id string
-    var add, del, read, toJson bool
+    var add, read, del, toJson bool
 
     flag.StringVar(&file, "file", "", "Path to the JSON database file")
     flag.StringVar(&doi, "doi", "", "Paper DOI")
     flag.StringVar(&title, "title", "", "Paper title")
     flag.StringVar(&id, "id", "", "Paper id")
     flag.BoolVar(&add, "a", false, "Add reference to the database")
-    flag.BoolVar(&del, "d", false, "Delete reference from the database")
     flag.BoolVar(&read, "r", false, "Read reference from the database")
+    flag.BoolVar(&del, "d", false, "Delete reference from the database")
     flag.BoolVar(&toJson, "json", false, "Print reference(s) in JSON format")
 
     flag.Parse()
@@ -44,7 +44,18 @@ func main() {
         os.Exit(1)
     }
 
+
+    if !add && !del && !read && !toJson {
+        flag.Usage()
+        os.Exit(1)
+    }
+
     if toJson {
+        if doi != "" || title != "" || id != "" {
+            flag.Usage()
+            os.Exit(1)
+        }
+
         for _, i := range d.Table {
             s, err := i.ToJson()
             if err != nil {
@@ -53,11 +64,6 @@ func main() {
             fmt.Println(s)
         }
         return
-    }
-
-    if !add && !del && !read {
-        flag.Usage()
-        os.Exit(1)
     }
 
     // Accept the input variable and check if already exists
