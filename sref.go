@@ -98,7 +98,7 @@ func main() {
 
     if add {
         if r != nil {
-            fmt.Println("Reference already exists")
+            fmt.Fprintf(os.Stderr, "Reference already exists: %s\n", r.ID)
             return 
         }
 
@@ -112,7 +112,7 @@ func main() {
         }
 
         if err != nil {
-            fmt.Printf("Failed to store reference: %s\n", err)
+            fmt.Printf("Failed to find reference: %s\n", err)
             os.Exit(1)
         }
 
@@ -140,11 +140,12 @@ func main() {
         }
         fmt.Println(s)
     } else if del {
-        err := d.Delete(doi)
+        err := d.Delete(r.DOI)
         if err != nil {
-            fmt.Fprintf(os.Stderr, "Failed fo delete DOI: %s\n", err)
+            fmt.Fprintf(os.Stderr, "Failed to delete reference: %s\n", err)
             os.Exit(1)
         }
+        fmt.Printf("Deleted %s\n", r.ID)
     } 
 }
 

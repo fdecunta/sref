@@ -29,7 +29,6 @@ type Reference struct {
     Page                string      `json:"page"`
     Volume              string      `json:"volume"`
     URL                 string      `json:"url"`
-    Abstract            string      `json:"abstract"`
 }
 
 
@@ -46,7 +45,6 @@ func BuildReference(msg *crossrefapi.Message) *Reference {
         Page: msg.Page,
         Volume: msg.Volume,
         URL: msg.URL,
-        Abstract: msg.Abstract,
     }
     return &r
 }
