@@ -9,21 +9,23 @@ import (
     "regexp"
     "strings"
 
-    "sref/crossref"
     "sref/db"
+    "sref/export"
+
+    "github.com/caltechlibrary/crossrefapi"
 )
 
 var d *db.DataBase
 
 func main() {
     var file string
-    var doi, title, id string
+    var doi, title string
     var add, read, del, toJson, toBib bool
 
     flag.StringVar(&file, "file", "", "Path to the JSON database file")
     flag.StringVar(&doi, "doi", "", "Paper DOI")
     flag.StringVar(&title, "title", "", "Paper title")
-    flag.StringVar(&id, "id", "", "Paper id")
+//    flag.StringVar(&id, "id", "", "Paper id")
     flag.BoolVar(&add, "a", false, "Add reference to the database")
     flag.BoolVar(&read, "r", false, "Read reference from the database")
     flag.BoolVar(&del, "d", false, "Delete reference from the database")
@@ -52,13 +54,13 @@ func main() {
     }
 
     if toJson {
-        if doi != "" || title != "" || id != "" {
+        if doi != "" || title != "" {
             flag.Usage()
             os.Exit(1)
         }
 
         for _, i := range d.Table {
-            s, err := i.ToJson()
+            s, err := export.Json(&i)
             if err != nil {
                 fmt.Println("can't format json")
             }
@@ -68,15 +70,15 @@ func main() {
     }
 
 
-    if toBib {
-        for _, i := range d.Table {
-           fmt.Println(i.ToBibTeX())
-        }
-        return
-    }
+//    if toBib {
+//        for _, i := range d.Table {
+//           fmt.Println(export.Bib(&i))
+//        }
+//        return
+//    }
 
     // Accept the input variable and check if already exists
-    var r *crossref.Reference
+    var r *crossrefapi.Message
     if doi != "" {
         doi, err = assertDoi(doi, d)
         if err != nil {
@@ -91,21 +93,18 @@ func main() {
         }
     } else if title != "" {
         r = d.QueryTitle(title)
-    } else if id != "" {
-        r = d.QueryId(id)
     } 
-
 
     if add {
         if r != nil {
-            fmt.Fprintf(os.Stderr, "Reference already exists: %s\n", r.ID)
+            fmt.Fprintf(os.Stderr, "Reference already exists: %s\n", r.DOI)
             return 
         }
 
         if doi != "" {
-            r, err = crossref.SearchDoi(doi)
+            r, err = SearchDoi(doi)
         } else if title != "" {
-            r, err = crossref.SearchTitle(title)
+            r, err = SearchTitle(title)
         } else {
             fmt.Println("No input provided")
             os.Exit(1)
@@ -119,9 +118,10 @@ func main() {
         err = d.Store(r)
         if err != nil {
             fmt.Printf("Failed to store reference: %s\n", err)
+            os.Exit(1)
         }
     
-        fmt.Printf("Added %s\n", r.ID)
+        fmt.Printf("Added %s\n", r.DOI)
         return
     }
 
@@ -133,7 +133,7 @@ func main() {
     }
 
     if read {
-        s, err := r.ToJson()
+        s, err := export.Json(r)
         if err != nil {
             fmt.Println("error: can't read reference \n%s\n", err)
             os.Exit(1)
@@ -145,7 +145,7 @@ func main() {
             fmt.Fprintf(os.Stderr, "Failed to delete reference: %s\n", err)
             os.Exit(1)
         }
-        fmt.Printf("Deleted %s\n", r.ID)
+        fmt.Printf("Deleted %s\n", r.DOI)
     } 
 }
 
@@ -215,4 +215,52 @@ func assertDoi(s string, d *db.DataBase) (string, error) {
     } 
 
     return doi, nil
+}
+
+
+func SearchDoi(doi string) (*crossrefapi.Message, error) {
+    // TODO: don't hardcode the email
+    client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
+    if err != nil {
+        return nil, err
+    }
+
+    works, err := client.Works(doi)
+    if err != nil {
+        return nil, err
+    }
+    if works.Status != "ok" {
+        return nil, errors.New("request is not ok")
+    }
+    
+    return works.Message, nil
+}
+
+
+func SearchTitle(title string) (*crossrefapi.Message, error) {
+    // TODO: don't hardcode the email
+    client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
+    if err != nil {
+        return nil, err
+    }
+
+    query := crossrefapi.WorksQuery{
+        Fields: &crossrefapi.WorksQueryFields{
+            Title: title,
+        },
+    }
+    works, err := client.QueryWorks(query)
+   
+    if err != nil {
+        return nil, err
+    }
+
+    if works.Status != "ok" {
+        return nil, errors.New("can't reach CrossrefAPI. Status not ok")
+    }
+    if len(works.Message.Items) == 0 {
+        return nil, errors.New("no results for title")
+    }
+
+    return &works.Message.Items[0], nil
 }

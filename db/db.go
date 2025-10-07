@@ -3,24 +3,27 @@ package db
 import (
     "encoding/json"
     "errors"
+    "fmt"
     "io"
     "os"
     "strings"
-    "strconv"
-    "sref/crossref"
+
+    "github.com/caltechlibrary/crossrefapi"
 )
 
+// Uses Message struct from crossrefapi:
+// https://github.com/caltechlibrary/crossrefapi/blob/main/works.go
 
 type DataBase struct {
     Path string
-    Table map[string]crossref.Reference
+    Table map[string]crossrefapi.Message
 }
 
 
 func Open(path string) (*DataBase, error) {
     d := DataBase{
         Path: path,
-        Table: make(map[string]crossref.Reference),
+        Table: make(map[string]crossrefapi.Message),
     }
 
 	f, err := os.Open(path)
@@ -55,12 +58,14 @@ func (db *DataBase) Write() error {
 }
 
 
-func (db *DataBase) Store(r *crossref.Reference) error {
-    id := db.assignId(r)
-    if id == "" {
-        return errors.New("can't assign new ID")
+func (db *DataBase) Store(r *crossrefapi.Message) error {
+    // Check that don't exist
+    if ref, ok := db.Table[r.DOI]; ok {
+        return fmt.Errorf("reference already exists %s", ref.DOI)
     }
-    r.ID = id
+
+    // Clear Reference. If not, you got a huge list with all the papers that cite this one
+    r.Reference = r.Reference[:0]
 
     db.Table[r.DOI] = *r
 
@@ -86,57 +91,9 @@ func (db *DataBase) Delete(doi string) error {
 }
 
 
-func (db *DataBase) assignId(r *crossref.Reference) string {
-    var family string
-    var year string
-
-    family = strings.TrimSpace(r.Author[0].Family)
-    family = strings.ReplaceAll(family, " ", "")
-
-    year = strconv.Itoa(r.Issued.DateParts[0][0])
-
-    base := family + year
-    if isIdFree(base, db) {
-        return base
-    }
-
-    // try counters until one is free
-    for i := 2; i < 100; i++ {
-        candidate := base + "_" + strconv.Itoa(i)
-        if isIdFree(candidate, db) {
-            return candidate
-        }
-    }
-
-    // if it reach this something bad happened
-    return base + "_x"
-}
-
-
-func isIdFree(id string, db *DataBase) bool {
-    for _, r := range db.Table {
-        if (id == r.ID) {
-            return false
-        }
-    }
-    return true
-}
-
-
-func (db * DataBase) QueryTitle(title string) (*crossref.Reference) {
+func (db * DataBase) QueryTitle(title string) (*crossrefapi.Message) {
     for _, i := range db.Table {
         if strings.Contains(strings.ToLower(i.Title[0]), strings.ToLower(title)) {
-            ref := db.Table[i.DOI]
-            return &ref
-        }
-    }
-    return nil
-}
-
-
-func (db *DataBase) QueryId(id string) (*crossref.Reference) {
-    for _, i := range db.Table {
-        if strings.ToLower(i.ID) == strings.ToLower(id) {
             ref := db.Table[i.DOI]
             return &ref
         }
