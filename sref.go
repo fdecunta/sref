@@ -112,13 +112,13 @@ func main() {
         }
 
         if err != nil {
-            fmt.Println("Failed to store reference: %s\n", err)
+            fmt.Printf("Failed to store reference: %s\n", err)
             os.Exit(1)
         }
 
         err = d.Store(r)
         if err != nil {
-            fmt.Println("Failed to store reference: %s\n", err)
+            fmt.Printf("Failed to store reference: %s\n", err)
         }
     
         fmt.Printf("Added %s\n", r.ID)
