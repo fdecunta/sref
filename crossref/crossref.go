@@ -4,7 +4,6 @@ import (
     "encoding/json"
     "errors"
     "fmt"
-    "strings"
 
     "github.com/caltechlibrary/crossrefapi"
 )
@@ -22,11 +21,11 @@ type Reference struct {
     ID                  string      `json:"id"`
     Type                string      `json:"type"`
     DOI                 string      `json:"doi"`
-    Title               string      `json:"title"`
+    Title               []string    `json:"title"`
     Author              []*crossrefapi.Person `json:"author"`
     Issued              *crossrefapi.DateObject `json:"issued"`
-    ContainerTitle      string      `json:"container-title"`
-    ShortContainerTitle string      `json:"short-container-title"`
+    ContainerTitle      []string    `json:"container-title"`
+    ShortContainerTitle []string    `json:"short-container-title"`
     Page                string      `json:"page"`
     Volume              string      `json:"volume"`
     URL                 string      `json:"url"`
@@ -39,11 +38,11 @@ func BuildReference(msg *crossrefapi.Message) *Reference {
         ID: "",
         Type: msg.Type,
         DOI: msg.DOI,
-        Title: strings.Join(msg.Title, " "),
+        Title: msg.Title,
         Author: msg.Author,
         Issued: msg.Issued,
-        ContainerTitle: strings.Join(msg.ContainerTitle, " "),
-        ShortContainerTitle: strings.Join(msg.ShortContainerTitle, " "),
+        ContainerTitle: msg.ContainerTitle,
+        ShortContainerTitle: msg.ShortContainerTitle,
         Page: msg.Page,
         Volume: msg.Volume,
         URL: msg.URL,
@@ -126,6 +125,6 @@ func (r *Reference) ToBibTeX() string {
   volume = {%s},
   pages = {%s},
   doi = {%s}
-}`, r.ID, authors, r.Title, r.ContainerTitle, 
+}`, r.ID, authors, r.Title[0], r.ContainerTitle[0], 
      r.Issued.DateParts[0][0], r.Volume, r.Page, r.DOI)
 }

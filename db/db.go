@@ -125,7 +125,7 @@ func isIdFree(id string, db *DataBase) bool {
 
 func (db * DataBase) QueryTitle(title string) (*crossref.Reference) {
     for _, i := range db.Table {
-        if strings.Contains(strings.ToLower(i.Title), strings.ToLower(title)) {
+        if strings.Contains(strings.ToLower(i.Title[0]), strings.ToLower(title)) {
             ref := db.Table[i.DOI]
             return &ref
         }
