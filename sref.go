@@ -128,7 +128,7 @@ func main() {
 
     // Next operations need r to exist:
     if r == nil {
-       fmt.Println("ERROR: reference not found")
+       fmt.Fprintf(os.Stderr, "reference not found\n")
        os.Exit(1)
     }
 
