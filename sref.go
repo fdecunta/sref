@@ -4,10 +4,12 @@ import (
     "errors"
     "flag"
     "fmt"
+    "io"
     "os"
     "path/filepath"
     "regexp"
     "strings"
+    "time"
 
     "sref/db"
     "sref/export"
@@ -16,21 +18,23 @@ import (
 )
 
 type Cmd struct {
-    file  string
-    verb  string
-    doi   string
-    title string
+    file    string
+    verb    string
+    doi     string
+    title   string
+    logFile string
 }
 
 type State struct {
-    db  *db.DataBase
-    msg *crossrefapi.Message
+    Db        *db.DataBase
+    Msg       *crossrefapi.Message
+    LogOutput io.Writer
 }
 
 func main() {
     var err error
     cmd := Cmd{}
-    state := State{nil, nil}
+    state := State{nil, nil, nil}
     flag.Usage = usage
 
     if len(os.Args) < 2 {
@@ -43,6 +47,7 @@ func main() {
     fs.StringVar(&cmd.file, "f", "", "Path to JSON file with references")
     fs.StringVar(&cmd.doi, "doi", "", "Paper DOI")
     fs.StringVar(&cmd.title, "title", "", "Paper title")
+    fs.StringVar(&cmd.logFile, "o", "", "Output log file")
     fs.Parse(os.Args[2:])
 
     if err := assertFile(&cmd); err != nil {
@@ -50,18 +55,31 @@ func main() {
         os.Exit(1)
     }
 
-    state.db, err = db.Open(cmd.file)
+    state.Db, err = db.Open(cmd.file)
     if err != nil {
         fmt.Fprintln(os.Stderr, "error:", err)
         os.Exit(1)
     }
 
     // Look for reference in database using -doi or -title Return nil is not in database
-    state.msg, err = lookupReference(cmd.doi, cmd.title, state.db)
+    state.Msg, err = lookupReference(cmd.doi, cmd.title, state.Db)
     if err != nil {
         fmt.Fprintln(os.Stderr, "error during lookupReference:", err)
         os.Exit(1)
     }
+
+
+    state.LogOutput = os.Stdout
+    if cmd.logFile != "" {
+        f, err := os.OpenFile(cmd.logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Cannot open log file %s: %v\n", cmd.logFile, err)
+            os.Exit(1)
+        }
+        state.LogOutput = io.MultiWriter(os.Stdout, f)
+        defer f.Close()
+    }
+
 
     switch cmd.verb {
     case "add":
@@ -95,37 +113,80 @@ func usage() {
 func Add(cmd *Cmd, state *State) {
     var err error
 
-    if state.msg != nil {
-        fmt.Fprintf(os.Stderr, "Reference already exists: %s\n", state.msg.DOI)
-        return 
-    }
-
     email, err := getUserEmail()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %s\nTo configure edit ~/config/sref/email.conf\n", err)
         os.Exit(1)
     }
+
+
+    if state.Msg != nil {
+        errMsg := ""
+        err := fmt.Errorf("Reference already exists: %s", state.Msg.DOI)
+        if cmd.logFile != "" {
+            errMsg = fmt.Sprintf("%s", FormatLog("FAILED", state.Msg.DOI, err))
+        } else {
+            errMsg = fmt.Sprintf("%s", state.Msg.DOI)
+        }
+        fmt.Fprintf(state.LogOutput, errMsg)
+        return 
+    }
+
  
     if cmd.doi != "" {
-        state.msg, err = SearchDoi(cmd.doi, email)
+        state.Msg, err = SearchDoi(cmd.doi, email)
     } else if cmd.title != "" {
-        state.msg, err = SearchTitle(cmd.title, email)
+        state.Msg, err = SearchTitle(cmd.title, email)
     } else {
         fmt.Println("No input provided")
         os.Exit(1)
     }
     
     if err != nil {
-        fmt.Printf("Failed to find reference: %s\n", err)
+        errMsg := ""
+        if cmd.logFile != "" {
+            var search string
+            if cmd.doi != "" {
+                search = cmd.doi
+            } else {
+                search = cmd.title
+            }
+            errMsg = fmt.Sprintf("%s", FormatLog("FAILED", search, err))
+        } else {
+            errMsg = fmt.Sprintf("Failed to find reference: %s", err)
+        }
+
+        fmt.Fprintln(state.LogOutput, errMsg)
         os.Exit(1)
     }
     
-    err = state.db.Store(state.msg)
+    err = state.Db.Store(state.Msg)
     if err != nil {
-        fmt.Printf("Failed to store reference: %s\n", err)
+        errMsg := ""
+        if cmd.logFile != "" {
+            var search string
+            if cmd.doi != "" {
+                search = cmd.doi
+            } else {
+                search = cmd.title
+            }
+            errMsg = fmt.Sprintf("%s", FormatLog("FAILED", search, err))
+        } else {
+            errMsg = fmt.Sprintf("Failed to store reference: %s", err)
+        }
+
+        fmt.Fprintln(state.LogOutput, errMsg)
         os.Exit(1)
     }
-    fmt.Printf("Added %s\n", state.msg.DOI)
+
+    successMsg := ""
+    if cmd.logFile != "" {
+        successMsg = fmt.Sprintf("%s", FormatLog("ADDED", state.Msg.DOI, nil))
+    } else {
+        successMsg = fmt.Sprintf("Added %s", state.Msg.DOI)
+    }
+    fmt.Fprintln(state.LogOutput, successMsg)
+    return
 }
 
 
@@ -133,16 +194,16 @@ func Read(cmd *Cmd, st *State) {
     var toPrint []*crossrefapi.Message
 
     if cmd.doi != "" || cmd.title != "" {
-        if st.msg == nil {
+        if st.Msg == nil {
             fmt.Fprintf(os.Stderr, "reference not found\n")
             return
         } else {
-            toPrint = append(toPrint, st.msg)
+            toPrint = append(toPrint, st.Msg)
         }
     } else {
-        for _, r := range st.db.Table {
-            msgPtr := &r
-            toPrint = append(toPrint, msgPtr)
+        for _, r := range st.Db.Table {
+            MsgPtr := &r
+            toPrint = append(toPrint, MsgPtr)
         }
     } 
 
@@ -158,12 +219,12 @@ func Read(cmd *Cmd, st *State) {
 
 
 func Delete(st *State) {
-    err := st.db.Delete(st.msg.DOI)
+    err := st.Db.Delete(st.Msg.DOI)
     if err != nil {
         fmt.Fprintf(os.Stderr, "Failed to delete reference: %s\n", err)
         os.Exit(1)
     }
-    fmt.Printf("Deleted %s\n", st.msg.DOI)
+    fmt.Printf("Deleted %s\n", st.Msg.DOI)
 }
 
 
@@ -244,6 +305,8 @@ func CaptureDoi(s string) (string, error) {
         return "", errors.New("Not a valid DOI")
     }
 
+    doi = strings.ToLower(doi)
+
     return doi, nil
 }
 
@@ -258,6 +321,11 @@ func SearchDoi(doi string, email string) (*crossrefapi.Message, error) {
     if err != nil {
         return nil, err
     }
+
+    if works == nil {
+        return nil, errors.New("NULL response by crossrefapi")
+    }
+
     if works.Status != "ok" {
         return nil, errors.New("request is not ok")
     }
@@ -321,4 +389,16 @@ func IsEmail(s string) bool {
     // regexp to catch email
     re := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
     return re.MatchString(s) 
+}
+
+
+func FormatLog(status string, doi string, err error) string {
+    timestamp := time.Now().Format("2006-01-02 15:04:05")
+    line := fmt.Sprintf("[%s] %s %s", timestamp, status, doi)
+
+    if err != nil {
+        line = fmt.Sprintf("%s \"%v\"", line, err)
+    }
+
+    return line
 }
