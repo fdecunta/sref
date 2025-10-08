@@ -25,7 +25,6 @@ func main() {
     flag.StringVar(&file, "file", "", "Path to the JSON database file")
     flag.StringVar(&doi, "doi", "", "Paper DOI")
     flag.StringVar(&title, "title", "", "Paper title")
-//    flag.StringVar(&id, "id", "", "Paper id")
     flag.BoolVar(&add, "a", false, "Add reference to the database")
     flag.BoolVar(&read, "r", false, "Read reference from the database")
     flag.BoolVar(&del, "d", false, "Delete reference from the database")
@@ -68,14 +67,6 @@ func main() {
         }
         return
     }
-
-
-//    if toBib {
-//        for _, i := range d.Table {
-//           fmt.Println(export.Bib(&i))
-//        }
-//        return
-//    }
 
     // Accept the input variable and check if already exists
     var r *crossrefapi.Message
@@ -161,7 +152,7 @@ func GetDefaultJson() (string, error) {
         return "", err
     }
 
-    configFile := filepath.Join(configDir, "sref.json")
+    configFile := filepath.Join(configDir, "references.json")
     file, err := os.OpenFile(configFile, os.O_RDONLY|os.O_CREATE, 0644)
     if err != nil {
         return "", err
@@ -219,8 +210,12 @@ func assertDoi(s string, d *db.DataBase) (string, error) {
 
 
 func SearchDoi(doi string) (*crossrefapi.Message, error) {
-    // TODO: don't hardcode the email
-    client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
+    email, err := getUserEmail()
+    if err != nil {
+        return nil, err 
+    }
+
+    client, err := crossrefapi.NewCrossRefClient("sref", email)
     if err != nil {
         return nil, err
     }
@@ -238,8 +233,12 @@ func SearchDoi(doi string) (*crossrefapi.Message, error) {
 
 
 func SearchTitle(title string) (*crossrefapi.Message, error) {
-    // TODO: don't hardcode the email
-    client, err := crossrefapi.NewCrossRefClient("sref", "fdecunta@agro.uba.ar")
+    email, err := getUserEmail()
+    if err != nil {
+        return nil, err 
+    }
+
+    client, err := crossrefapi.NewCrossRefClient("sref", email)
     if err != nil {
         return nil, err
     }
@@ -263,4 +262,28 @@ func SearchTitle(title string) (*crossrefapi.Message, error) {
     }
 
     return &works.Message.Items[0], nil
+}
+
+
+func getUserEmail() (string, error) {
+    homeDir, err := os.UserHomeDir()
+    if err != nil {
+        return "", err
+    }
+
+    emailFile := filepath.Join(homeDir, ".config", "sref", "email.conf")
+    emailBytes, err := os.ReadFile(emailFile)
+    if err != nil {
+        return "", err
+    }
+
+    email := strings.TrimSpace(string(emailBytes))
+
+    // regexp to catch email
+    re := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+    if !re.MatchString(email) {
+        return "", errors.New("invalid email")
+    }
+
+    return email, nil
 }
