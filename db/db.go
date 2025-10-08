@@ -45,7 +45,7 @@ func Open(path string) (*DataBase, error) {
 
 
 func (db *DataBase) Write() error {
-	f, err := os.Create(db.Path)
+    f, err := os.OpenFile(db.Path, os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,12 @@ func (db *DataBase) Write() error {
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ") 
 
-	return enc.Encode(db.Table)
+    err = enc.Encode(db.Table)
+    if err != nil {
+        return err
+    }
+
+	return nil
 }
 
 

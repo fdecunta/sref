@@ -15,129 +15,159 @@ import (
     "github.com/caltechlibrary/crossrefapi"
 )
 
-var d *db.DataBase
+type Cmd struct {
+    file  string
+    verb  string
+    doi   string
+    title string
+}
+
+type State struct {
+    db  *db.DataBase
+    msg *crossrefapi.Message
+}
 
 func main() {
-    var file string
-    var doi, title string
-    var add, read, del, toJson, toBib bool
+    cmd := Cmd{}
+    state := State{nil, nil}
+    flag.Usage = usage
+    var err error
 
-    flag.StringVar(&file, "file", "", "Path to the JSON database file")
-    flag.StringVar(&doi, "doi", "", "Paper DOI")
-    flag.StringVar(&title, "title", "", "Paper title")
-    flag.BoolVar(&add, "a", false, "Add reference to the database")
-    flag.BoolVar(&read, "r", false, "Read reference from the database")
-    flag.BoolVar(&del, "d", false, "Delete reference from the database")
-    flag.BoolVar(&toJson, "json", false, "Print reference(s) in JSON format")
-    flag.BoolVar(&toBib, "bib", false, "Print reference(s) in BibTeX format")
+    cmd.verb = os.Args[1]
 
-    flag.Parse()
+    fs := flag.NewFlagSet(cmd.verb, flag.ExitOnError)
+    fs.StringVar(&cmd.file, "f", "", "Path to the JSON database file")
+    fs.StringVar(&cmd.doi, "doi", "", "Paper DOI")
+    fs.StringVar(&cmd.title, "title", "", "Paper title")
+    fs.Parse(os.Args[2:])
 
-    file, err := assertFile(file)
-    if err != nil {
-        fmt.Println(err)
+    if len(os.Args) < 2 {
         flag.Usage()
         os.Exit(1)
     }
 
-    d, err = db.Open(file)
+    if err := assertFile(&cmd); err != nil {
+        fmt.Fprintf(os.Stderr, "can't assert json file. %\n", err)
+        flag.Usage()
+        os.Exit(1)
+    }
+
+    state.db, err = db.Open(cmd.file)
     if err != nil {
         fmt.Fprintln(os.Stderr, "error:", err)
         os.Exit(1)
     }
 
-
-    if !add && !del && !read && !toJson && !toBib {
-        flag.Usage()
-        os.Exit(1)
-    }
-
-    if toJson {
-        if doi != "" || title != "" {
-            flag.Usage()
-            os.Exit(1)
-        }
-
-        for _, i := range d.Table {
-            s, err := export.Json(&i)
-            if err != nil {
-                fmt.Println("can't format json")
-            }
-            fmt.Println(s)
-        }
-        return
-    }
-
-    // Accept the input variable and check if already exists
-    var r *crossrefapi.Message
-    if doi != "" {
-        doi, err = assertDoi(doi, d)
+    // Check if reference already exists
+    if cmd.doi != "" {
+        cmd.doi, err = CaptureDoi(cmd.doi)
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
         }
-        ref, ok := d.Table[doi]
+        ref, ok := state.db.Table[cmd.doi]
         if ok {
-            r = &ref
-        } else {
-            r = nil
-        }
-    } else if title != "" {
-        r = d.QueryTitle(title)
+            state.msg = &ref
+        } 
+    } else if cmd.title != "" {
+        state.msg = state.db.QueryTitle(cmd.title)
     } 
 
-    if add {
-        if r != nil {
-            fmt.Fprintf(os.Stderr, "Reference already exists: %s\n", r.DOI)
-            return 
-        }
+    switch cmd.verb {
+    case "add":
+        Add(&cmd, &state)
+    case "read":
+        Read(&cmd, &state)
+    case "del":
+        Delete(&state)
+    case "edit":
+        fmt.Println("not implemented yet")
+    default:
+        fmt.Println("unknown subcommand:", os.Args[1])
+        flag.Usage()
+        os.Exit(1)
+    }
+}
 
-        if doi != "" {
-            r, err = SearchDoi(doi)
-        } else if title != "" {
-            r, err = SearchTitle(title)
-        } else {
-            fmt.Println("No input provided")
-            os.Exit(1)
-        }
 
-        if err != nil {
-            fmt.Printf("Failed to find reference: %s\n", err)
-            os.Exit(1)
-        }
+func usage() {
+    fmt.Println("Usage: sref <subcommand> [options]")
+    fmt.Println("Subcommands:")
+    fmt.Println("  add     Add a new entry")
+    fmt.Println("  read    Read an entry")
+    fmt.Println("  del     Delete an entry")
+    fmt.Println("  edit    Edit an entry")
+    fmt.Println("\nGlobal options:")
+    flag.PrintDefaults()
+}
 
-        err = d.Store(r)
-        if err != nil {
-            fmt.Printf("Failed to store reference: %s\n", err)
-            os.Exit(1)
-        }
+
+func Add(cmd *Cmd, state *State) {
+    var err error
+
+    if state.msg != nil {
+        fmt.Fprintf(os.Stderr, "Reference already exists: %s\n", state.msg.DOI)
+        return 
+    }
     
-        fmt.Printf("Added %s\n", r.DOI)
-        return
+    if cmd.doi != "" {
+        state.msg, err = SearchDoi(cmd.doi)
+    } else if cmd.title != "" {
+        state.msg, err = SearchTitle(cmd.title)
+    } else {
+        fmt.Println("No input provided")
+        os.Exit(1)
     }
-
-
-    // Next operations need r to exist:
-    if r == nil {
-       fmt.Fprintf(os.Stderr, "reference not found\n")
-       os.Exit(1)
+    
+    if err != nil {
+        fmt.Printf("Failed to find reference: %s\n", err)
+        os.Exit(1)
     }
+    
+    err = state.db.Store(state.msg)
+    if err != nil {
+        fmt.Printf("Failed to store reference: %s\n", err)
+        os.Exit(1)
+    }
+    fmt.Printf("Added %s\n", state.msg.DOI)
+}
 
-    if read {
-        s, err := export.Json(r)
+
+func Read(cmd *Cmd, st *State) {
+    var toPrint []*crossrefapi.Message
+
+    if cmd.doi != "" || cmd.title != "" {
+        if st.msg == nil {
+            fmt.Fprintf(os.Stderr, "reference not found\n")
+            return
+        } else {
+            toPrint = append(toPrint, st.msg)
+        }
+    } else {
+        for _, r := range st.db.Table {
+            msgPtr := &r
+            toPrint = append(toPrint, msgPtr)
+        }
+    } 
+
+    for _, i := range toPrint {
+        s, err := export.Json(i)
         if err != nil {
-            fmt.Println("error: can't read reference \n%s\n", err)
-            os.Exit(1)
+            fmt.Fprintf(os.Stderr, "can't format json: %v\n", err)
+            continue
         }
         fmt.Println(s)
-    } else if del {
-        err := d.Delete(r.DOI)
-        if err != nil {
-            fmt.Fprintf(os.Stderr, "Failed to delete reference: %s\n", err)
-            os.Exit(1)
-        }
-        fmt.Printf("Deleted %s\n", r.DOI)
-    } 
+    }
+}
+
+
+func Delete(st *State) {
+    err := st.db.Delete(st.msg.DOI)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Failed to delete reference: %s\n", err)
+        os.Exit(1)
+    }
+    fmt.Printf("Deleted %s\n", st.msg.DOI)
 }
 
 
@@ -163,47 +193,38 @@ func GetDefaultJson() (string, error) {
 }
 
 
-func assertFile(file string) (string, error) {
-    if file == "" {
+func assertFile(c *Cmd) error {
+    if c.file == "" {
         var err error
-        file, err = GetDefaultJson()
+        c.file, err = GetDefaultJson()
         if err != nil {
-            return "", err
+            return err
         }
     }
 
-    if _, err := os.Stat(file); err != nil {
+    if _, err := os.Stat(c.file); err != nil {
         if os.IsNotExist(err) {
-            return "", errors.New("File does not exist")
+            return errors.New("File does not exist")
         }
-        return "", err
+        return err
     } 
 
-    if filepath.Ext(file) != ".json" {
-        return "", errors.New("File is not JSON")
+    if filepath.Ext(c.file) != ".json" {
+        return errors.New("File is not JSON")
     }
 
-    return file, nil
+    return nil
 }
 
 
-func CaptureDoi(s string) (string, bool) {
-    re := regexp.MustCompile(`10\.\d{4,}/\S+`)
-    match := re.FindString(s)
-    if match != "" {
-        return match, true
-    }
-    return "", false
-}
-
-
-func assertDoi(s string, d *db.DataBase) (string, error) {
+func CaptureDoi(s string) (string, error) {
     s = strings.TrimSpace(s)
 
-    doi, ok := CaptureDoi(s)
-    if !ok {
+    re := regexp.MustCompile(`10\.\d{4,}/\S+`)
+    doi := re.FindString(s)
+    if doi == "" {
         return "", errors.New("Not a valid DOI")
-    } 
+    }
 
     return doi, nil
 }
@@ -286,4 +307,10 @@ func getUserEmail() (string, error) {
     }
 
     return email, nil
+}
+
+func IsEmail(s string) bool {
+    // regexp to catch email
+    re := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+    return re.MatchString(s) 
 }

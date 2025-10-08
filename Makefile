@@ -15,4 +15,7 @@ uninstall:
 build: sref.go
 	go build sref.go
 
-.PHONY: install uninstall build
+test:
+	go test -v
+
+.PHONY: install uninstall build test
