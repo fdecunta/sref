@@ -28,27 +28,25 @@ type State struct {
 }
 
 func main() {
+    var err error
     cmd := Cmd{}
     state := State{nil, nil}
     flag.Usage = usage
-    var err error
-
-    cmd.verb = os.Args[1]
-
-    fs := flag.NewFlagSet(cmd.verb, flag.ExitOnError)
-    fs.StringVar(&cmd.file, "f", "", "Path to the JSON database file")
-    fs.StringVar(&cmd.doi, "doi", "", "Paper DOI")
-    fs.StringVar(&cmd.title, "title", "", "Paper title")
-    fs.Parse(os.Args[2:])
 
     if len(os.Args) < 2 {
         flag.Usage()
         os.Exit(1)
     }
 
+    cmd.verb = os.Args[1]
+    fs := flag.NewFlagSet(cmd.verb, flag.ExitOnError)
+    fs.StringVar(&cmd.file, "f", "", "Path to JSON file with references")
+    fs.StringVar(&cmd.doi, "doi", "", "Paper DOI")
+    fs.StringVar(&cmd.title, "title", "", "Paper title")
+    fs.Parse(os.Args[2:])
+
     if err := assertFile(&cmd); err != nil {
-        fmt.Fprintf(os.Stderr, "can't assert json file. %\n", err)
-        flag.Usage()
+        fmt.Fprintf(os.Stderr, "error with input file %s\n", err)
         os.Exit(1)
     }
 
@@ -58,20 +56,12 @@ func main() {
         os.Exit(1)
     }
 
-    // Check if reference already exists
-    if cmd.doi != "" {
-        cmd.doi, err = CaptureDoi(cmd.doi)
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-        ref, ok := state.db.Table[cmd.doi]
-        if ok {
-            state.msg = &ref
-        } 
-    } else if cmd.title != "" {
-        state.msg = state.db.QueryTitle(cmd.title)
-    } 
+    // Look for reference in database using -doi or -title Return nil is not in database
+    state.msg, err = lookupReference(cmd.doi, cmd.title, state.db)
+    if err != nil {
+        fmt.Fprintln(os.Stderr, "error during lookupReference:", err)
+        os.Exit(1)
+    }
 
     switch cmd.verb {
     case "add":
@@ -109,11 +99,17 @@ func Add(cmd *Cmd, state *State) {
         fmt.Fprintf(os.Stderr, "Reference already exists: %s\n", state.msg.DOI)
         return 
     }
-    
+
+    email, err := getUserEmail()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error: %s\nTo configure edit ~/config/sref/email.conf\n", err)
+        os.Exit(1)
+    }
+ 
     if cmd.doi != "" {
-        state.msg, err = SearchDoi(cmd.doi)
+        state.msg, err = SearchDoi(cmd.doi, email)
     } else if cmd.title != "" {
-        state.msg, err = SearchTitle(cmd.title)
+        state.msg, err = SearchTitle(cmd.title, email)
     } else {
         fmt.Println("No input provided")
         os.Exit(1)
@@ -168,6 +164,28 @@ func Delete(st *State) {
         os.Exit(1)
     }
     fmt.Printf("Deleted %s\n", st.msg.DOI)
+}
+
+
+func lookupReference(doi string, title string, d *db.DataBase) (*crossrefapi.Message, error) {
+    // Check if reference already exists
+    if doi != "" {
+        doi, err := CaptureDoi(doi)
+        if err != nil {
+            return nil, err
+        }
+
+        ref, ok := d.Table[doi]
+        if ok {
+            return &ref, nil
+        } 
+    } 
+
+    if title != "" {
+        return d.QueryTitle(title), nil
+    } 
+
+    return nil, nil
 }
 
 
@@ -230,12 +248,7 @@ func CaptureDoi(s string) (string, error) {
 }
 
 
-func SearchDoi(doi string) (*crossrefapi.Message, error) {
-    email, err := getUserEmail()
-    if err != nil {
-        return nil, err 
-    }
-
+func SearchDoi(doi string, email string) (*crossrefapi.Message, error) {
     client, err := crossrefapi.NewCrossRefClient("sref", email)
     if err != nil {
         return nil, err
@@ -253,12 +266,7 @@ func SearchDoi(doi string) (*crossrefapi.Message, error) {
 }
 
 
-func SearchTitle(title string) (*crossrefapi.Message, error) {
-    email, err := getUserEmail()
-    if err != nil {
-        return nil, err 
-    }
-
+func SearchTitle(title string, email string) (*crossrefapi.Message, error) {
     client, err := crossrefapi.NewCrossRefClient("sref", email)
     if err != nil {
         return nil, err
