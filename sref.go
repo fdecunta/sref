@@ -21,7 +21,6 @@ type Cmd struct {
     file    string
     verb    string
     doi     string
-    title   string
     logFile string
 }
 
@@ -46,7 +45,6 @@ func main() {
     fs := flag.NewFlagSet(cmd.verb, flag.ExitOnError)
     fs.StringVar(&cmd.file, "f", "", "Path to JSON file with references")
     fs.StringVar(&cmd.doi, "doi", "", "Paper DOI")
-    fs.StringVar(&cmd.title, "title", "", "Paper title")
     fs.StringVar(&cmd.logFile, "o", "", "Output log file")
     fs.Parse(os.Args[2:])
 
@@ -61,13 +59,12 @@ func main() {
         os.Exit(1)
     }
 
-    // Look for reference in database using -doi or -title Return nil is not in database
-    state.Msg, err = lookupReference(cmd.doi, cmd.title, state.Db)
+    // Look for reference in database using -doi. Return nil if not in database
+    state.Msg, err = lookupReference(cmd.doi, state.Db)
     if err != nil {
         fmt.Fprintln(os.Stderr, "error during lookupReference:", err)
         os.Exit(1)
     }
-
 
     state.LogOutput = os.Stdout
     if cmd.logFile != "" {
@@ -135,8 +132,6 @@ func Add(cmd *Cmd, state *State) {
  
     if cmd.doi != "" {
         state.Msg, err = SearchDoi(cmd.doi, email)
-    } else if cmd.title != "" {
-        state.Msg, err = SearchTitle(cmd.title, email)
     } else {
         fmt.Println("No input provided")
         os.Exit(1)
@@ -148,8 +143,6 @@ func Add(cmd *Cmd, state *State) {
             var search string
             if cmd.doi != "" {
                 search = cmd.doi
-            } else {
-                search = cmd.title
             }
             errMsg = fmt.Sprintf("%s", FormatLog("FAILED", search, err))
         } else {
@@ -167,8 +160,6 @@ func Add(cmd *Cmd, state *State) {
             var search string
             if cmd.doi != "" {
                 search = cmd.doi
-            } else {
-                search = cmd.title
             }
             errMsg = fmt.Sprintf("%s", FormatLog("FAILED", search, err))
         } else {
@@ -193,7 +184,7 @@ func Add(cmd *Cmd, state *State) {
 func Read(cmd *Cmd, st *State) {
     var toPrint []*crossrefapi.Message
 
-    if cmd.doi != "" || cmd.title != "" {
+    if cmd.doi != "" {
         if st.Msg == nil {
             fmt.Fprintf(os.Stderr, "reference not found\n")
             return
@@ -228,7 +219,7 @@ func Delete(st *State) {
 }
 
 
-func lookupReference(doi string, title string, d *db.DataBase) (*crossrefapi.Message, error) {
+func lookupReference(doi string, d *db.DataBase) (*crossrefapi.Message, error) {
     // Check if reference already exists
     if doi != "" {
         doi, err := CaptureDoi(doi)
@@ -240,10 +231,6 @@ func lookupReference(doi string, title string, d *db.DataBase) (*crossrefapi.Mes
         if ok {
             return &ref, nil
         } 
-    } 
-
-    if title != "" {
-        return d.QueryTitle(title), nil
     } 
 
     return nil, nil
@@ -334,34 +321,6 @@ func SearchDoi(doi string, email string) (*crossrefapi.Message, error) {
 }
 
 
-func SearchTitle(title string, email string) (*crossrefapi.Message, error) {
-    client, err := crossrefapi.NewCrossRefClient("sref", email)
-    if err != nil {
-        return nil, err
-    }
-
-    query := crossrefapi.WorksQuery{
-        Fields: &crossrefapi.WorksQueryFields{
-            Title: title,
-        },
-    }
-    works, err := client.QueryWorks(query)
-   
-    if err != nil {
-        return nil, err
-    }
-
-    if works.Status != "ok" {
-        return nil, errors.New("can't reach CrossrefAPI. Status not ok")
-    }
-    if len(works.Message.Items) == 0 {
-        return nil, errors.New("no results for title")
-    }
-
-    return &works.Message.Items[0], nil
-}
-
-
 func getUserEmail() (string, error) {
     homeDir, err := os.UserHomeDir()
     if err != nil {
@@ -384,6 +343,7 @@ func getUserEmail() (string, error) {
 
     return email, nil
 }
+
 
 func IsEmail(s string) bool {
     // regexp to catch email
