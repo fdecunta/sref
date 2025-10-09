@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# json2ref - Convert CrossRef JSON to simple reference format
+
+jq -r '
+  # Format authors
+  def format_authors:
+    if .author and (.author | length > 0) then
+      if (.author | length) > 3 then
+        .author[0].family + " et al."
+      else
+        .author | map(.family) | join(", ")
+      end
+    else
+      ""
+    end;
+  
+  # Get year
+  def get_year:
+    if .issued and .issued["date-parts"] and (.issued["date-parts"] | length > 0) then
+      .issued["date-parts"][0][0] | tostring
+    else
+      ""
+    end;
+  
+  # Build citation
+  format_authors + "|" +
+  get_year + "|" +
+  (.title[0] // "") + "|" +
+  (."container-title"[0] // "") + "|" +
+  (.doi)
+'

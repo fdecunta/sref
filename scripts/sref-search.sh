@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+DOI="$(sref read -f "$1" | ./json2apa | column -t -s'|' | fzf | awk -F'  +' '{print $NF}')"
+
+sref read -f "$1" -doi "$DOI"
+
+
