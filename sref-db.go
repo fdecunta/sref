@@ -49,20 +49,20 @@ func main() {
     fs.Parse(os.Args[2:])
 
     if err := assertFile(&cmd); err != nil {
-        fmt.Fprintln(os.Stderr, "error with input file %s", err)
+        fmt.Fprintf(os.Stderr, "error with input file %s\n", err)
         os.Exit(1)
     }
 
     state.Db, err = db.Open(cmd.file)
     if err != nil {
-        fmt.Fprintln(os.Stderr, "error:", err)
+        fmt.Fprintf(os.Stderr, "error: %s\n", err)
         os.Exit(1)
     }
 
     // Look for reference in database using -doi. Return nil if not in database
     state.Msg, err = lookupReference(cmd.doi, state.Db)
     if err != nil {
-        fmt.Fprintln(os.Stderr, "error during lookupReference:", err)
+        fmt.Fprintf(os.Stderr, "error during lookupReference: %s\n", err)
         os.Exit(1)
     }
 
@@ -70,7 +70,7 @@ func main() {
     if cmd.logFile != "" {
         f, err := os.OpenFile(cmd.logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
         if err != nil {
-            fmt.Fprintln(os.Stderr, "Cannot open log file %s: %v", cmd.logFile, err)
+            fmt.Fprintf(os.Stderr, "Cannot open log file %s: %v\n", cmd.logFile, err)
             os.Exit(1)
         }
         state.LogOutput = io.MultiWriter(os.Stdout, f)
@@ -118,7 +118,7 @@ func Add(cmd *Cmd, state *State) {
 
     email, err := getUserEmail()
     if err != nil {
-        fmt.Fprintln(os.Stderr, "Error: %s\nTo configure edit ~/config/sref/email.conf", err)
+        fmt.Fprintf(os.Stderr, "Error: %s\nTo configure edit ~/config/sref/email.conf", err)
         os.Exit(1)
     }
 
@@ -130,7 +130,7 @@ func Add(cmd *Cmd, state *State) {
         } else {
             errMsg = fmt.Sprintf("%s %s", err, state.Msg.DOI)
         }
-        fmt.Fprintln(state.LogOutput, errMsg)
+        fmt.Fprintf(state.LogOutput, "%s\n", errMsg)
         return 
     }
 
@@ -154,7 +154,7 @@ func Add(cmd *Cmd, state *State) {
             errMsg = fmt.Sprintf("Failed to find reference: %s", err)
         }
 
-        fmt.Fprintln(state.LogOutput, errMsg)
+        fmt.Fprintf(state.LogOutput, "%v\n", errMsg)
         os.Exit(1)
     }
     
@@ -171,7 +171,7 @@ func Add(cmd *Cmd, state *State) {
             errMsg = fmt.Sprintf("Failed to store reference: %s", err)
         }
 
-        fmt.Fprintln(state.LogOutput, errMsg)
+        fmt.Fprintf(state.LogOutput, "%v\n", errMsg)
         os.Exit(1)
     }
 
@@ -181,7 +181,7 @@ func Add(cmd *Cmd, state *State) {
     } else {
         successMsg = fmt.Sprintf("Added %s", state.Msg.DOI)
     }
-    fmt.Fprintln(state.LogOutput, successMsg)
+    fmt.Fprintf(state.LogOutput, "%v\n", successMsg)
     return
 }
 
@@ -191,7 +191,7 @@ func Read(cmd *Cmd, st *State) {
 
     if cmd.doi != "" {
         if st.Msg == nil {
-            fmt.Fprintln(os.Stderr, "reference not found")
+            fmt.Fprintf(os.Stderr, "reference not found\n")
             return
         } else {
             toPrint = append(toPrint, st.Msg)
@@ -206,7 +206,7 @@ func Read(cmd *Cmd, st *State) {
     for _, i := range toPrint {
         s, err := export.Json(i)
         if err != nil {
-            fmt.Fprintln(os.Stderr, "can't format json: %v", err)
+            fmt.Fprintf(os.Stderr, "can't format json: %v\n", err)
             continue
         }
         fmt.Println(s)
@@ -217,7 +217,7 @@ func Read(cmd *Cmd, st *State) {
 func Delete(st *State) {
     err := st.Db.Delete(st.Msg.DOI)
     if err != nil {
-        fmt.Fprintln(os.Stderr, "Failed to delete reference: %s", err)
+        fmt.Fprintf(os.Stderr, "Failed to delete reference: %s\n", err)
         os.Exit(1)
     }
     fmt.Printf("Deleted %s\n", st.Msg.DOI)
