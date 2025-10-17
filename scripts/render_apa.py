@@ -62,12 +62,12 @@ def format_apa_reference(ref_data):
         if issue:
             volume_issue += f"({issue})"
         
-        return f"{author_string} ({year}). {title}. {journal_display}, {volume_issue}, {pages}. https://doi.org/{ref_data['doi']}"
+        return f"{author_string}. ({year}). {title}. {journal_display}, {volume_issue}, {pages}. https://doi.org/{ref_data['doi']}"
     
     elif ref_type == 'book':
         # Book format
         publisher = "Springer"  # Default publisher for these references
-        return f"{author_string} ({year}). {title}. {publisher}. https://doi.org/{ref_data['doi']}"
+        return f"{author_string}. ({year}). {title}. {publisher}. https://doi.org/{ref_data['doi']}"
     
     elif ref_type == 'book-chapter':
         # Book chapter format
@@ -78,11 +78,11 @@ def format_apa_reference(ref_data):
         if len(ref_data.get('container-title', [])) > 1:
             book_title = ref_data['container-title'][-1]  # Use the last container title as book title
         
-        return f"{author_string} ({year}). {title}. In {book_title} (pp. {pages}). {publisher}. https://doi.org/{ref_data['doi']}"
+        return f"{author_string}. ({year}). {title}. In {book_title} (pp. {pages}). {publisher}. https://doi.org/{ref_data['doi']}"
     
     else:
         # Default format for other types
-        return f"{author_string} ({year}). {title}. https://doi.org/{ref_data['doi']}"
+        return f"{author_string}. ({year}). {title}. https://doi.org/{ref_data['doi']}"
 
 # Load and process your JSON data
 def render_apa_references(json_file_path):
