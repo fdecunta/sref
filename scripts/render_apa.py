@@ -55,14 +55,14 @@ def format_apa_reference(ref_data):
         pages = ref_data.get('page', '')
         
         # Short journal name if available
-        short_journal = ref_data.get('short-container-title', [''])[0]
-        journal_display = short_journal if short_journal else journal
+#        short_journal = ref_data.get('short-container-title', [''])[0]
+        journal_display = journal
         
         volume_issue = f"{volume}"
         if issue:
             volume_issue += f"({issue})"
         
-        return f"{author_string}. ({year}). {title}. {journal_display}, {volume_issue}, {pages}. https://doi.org/{ref_data['doi']}"
+        return f"{author_string}. ({year}). {title}. <i>{journal_display}<\i>, <i>{volume}<\i>({issue}), {pages}. https://doi.org/{ref_data['doi']}"
     
     elif ref_type == 'book':
         # Book format
