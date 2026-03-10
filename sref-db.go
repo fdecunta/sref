@@ -83,7 +83,7 @@ func main() {
     case "read":
         Read(&cmd, &state)
     case "del":
-        Delete(&state)
+        Delete(&cmd, &state)
     case "edit":
         fmt.Println("not implemented yet")
     default:
@@ -214,13 +214,23 @@ func Read(cmd *Cmd, st *State) {
 }
 
 
-func Delete(st *State) {
-    err := st.Db.Delete(st.Msg.DOI)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Failed to delete reference: %s\n", err)
-        os.Exit(1)
-    }
-    fmt.Printf("Deleted %s\n", st.Msg.DOI)
+func Delete(cmd *Cmd, st *State) {
+	if cmd.doi == "" {
+		fmt.Fprintf(os.Stderr, "error: -doi flag is required for del\n")
+		os.Exit(1)
+	}
+
+	if st.Msg == nil {
+		fmt.Fprintf(os.Stderr, "error: reference not found: %s\n", cmd.doi)
+		os.Exit(1)
+	}
+
+	err := st.Db.Delete(st.Msg.DOI)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to delete reference: %s\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("Deleted %s\n", st.Msg.DOI)
 }
 
 
