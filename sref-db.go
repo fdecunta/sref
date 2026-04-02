@@ -84,8 +84,6 @@ func main() {
         Read(&cmd, &state)
     case "del":
         Delete(&cmd, &state)
-    case "edit":
-        fmt.Println("not implemented yet")
     default:
         fmt.Println("unknown subcommand:", os.Args[1])
         flag.Usage()
@@ -100,7 +98,6 @@ func usage() {
     fmt.Println("  add     Add a new entry")
     fmt.Println("  read    Read an entry")
     fmt.Println("  del     Delete an entry")
-    fmt.Println("  edit    Edit an entry")
     fmt.Println("\nArgs:")
     fmt.Println("  -f      JSON database. Default to ~/.config/sref/references.json")
     fmt.Println("  -doi    Paper DOI")
