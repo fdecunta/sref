@@ -118,7 +118,7 @@ func Add(cmd *Cmd, state *State) {
 
     email, err := getUserEmail()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error: %s\nTo configure edit ~/config/sref/email.conf", err)
+        fmt.Fprintf(os.Stderr, "Error: %s\nTo configure edit ~/.config/sref/email.conf\n", err)
         os.Exit(1)
     }
 
